@@ -1,11 +1,8 @@
-import { NextConfig } from 'next'
+import { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
-  experimental: {
-    appDir: true, // enable app router
-  },
-}
+  reactStrictMode: true, // recommended
+  // Remove swcMinify and experimental keys
+};
 
-export default nextConfig
+export default nextConfig;
