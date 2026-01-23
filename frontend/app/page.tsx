@@ -229,48 +229,64 @@ export default function HomePage() {
       )}
 
       {/* Modal */}
-      {selectedLand && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg max-w-3xl w-full p-6 relative transform transition-transform duration-300 scale-95 animate-fade-in">
-            <button
-              onClick={() => setSelectedLand(null)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 font-bold text-xl"
-            >
-              ×
-            </button>
-            <h2 className="text-2xl font-bold mb-2">{selectedLand.village}, {selectedLand.mandal}</h2>
-            <p className="mb-1 font-semibold">Price: ₹{formatPrice(selectedLand.total_price)}</p>
-            <p className="mb-1">Area: {selectedLand.area} {selectedLand.area_unit}</p>
-            <p className="mb-1">Location: {selectedLand.state} / {selectedLand.district} / {selectedLand.mandal}</p>
-            {selectedLand.owner_name && <p className="mt-2 font-medium">Owner: {selectedLand.owner_name}</p>}
-            {selectedLand.owner_number && (
-              <p className="flex items-center gap-2 mt-1">
-                <FaWhatsapp className="text-green-500" /> {selectedLand.owner_number}
-              </p>
-            )}
+{selectedLand && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50"
+    onClick={() => setSelectedLand(null)} // close modal when clicking outside
+  >
+    <div
+      className="bg-white rounded-lg shadow-lg max-w-3xl w-full p-6 relative transform transition-transform duration-300 scale-95 animate-fade-in"
+      onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
+    >
+      <button
+        onClick={() => setSelectedLand(null)}
+        className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 font-bold text-xl"
+      >
+        ×
+      </button>
 
-            {selectedLand.image_urls && (
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {(
-                  Array.isArray(selectedLand.image_urls)
-                    ? selectedLand.image_urls
-                    : typeof selectedLand.image_urls === 'string'
-                    ? selectedLand.image_urls.split('|').map(i => i.trim()).filter(Boolean)
-                    : []
-                ).map((img, i) => (
-                  <img
-                    key={i}
-                    src={img}
-                    alt={`${selectedLand.village} ${i + 1}`}
-                    className="w-full h-32 object-cover rounded"
-                    loading="lazy"
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+      <h2 className="text-2xl font-bold mb-2">
+        {selectedLand.village}, {selectedLand.mandal}
+      </h2>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Property Details */}
+        <div className="flex flex-col gap-1">
+          <p><span className="font-semibold">Price:</span> {formatPrice(selectedLand.total_price)}</p>
+          <p><span className="font-semibold">Area:</span> {selectedLand.area} {selectedLand.area_unit}</p>
+          <p><span className="font-semibold">State:</span> {selectedLand.state}</p>
+          <p><span className="font-semibold">District:</span> {selectedLand.district}</p>
+          <p><span className="font-semibold">Mandal:</span> {selectedLand.mandal}</p>
+          {selectedLand.owner_name && <p><span className="font-semibold">Owner:</span> {selectedLand.owner_name}</p>}
+          {selectedLand.owner_number && (
+            <p className="flex items-center gap-2">
+              <FaWhatsapp className="text-green-500" /> {selectedLand.owner_number}
+            </p>
+          )}
         </div>
-      )}
-    </main>
-  )
+
+        {/* Property Images */}
+        {selectedLand.image_urls && (
+          <div className="grid grid-cols-2 sm:grid-cols-2 gap-2">
+            {(Array.isArray(selectedLand.image_urls)
+              ? selectedLand.image_urls
+              : typeof selectedLand.image_urls === 'string'
+              ? selectedLand.image_urls.split('|').map(i => i.trim()).filter(Boolean)
+              : []
+            ).map((img, i) => (
+              <img
+                key={i}
+                src={img}
+                alt={`${selectedLand.village} ${i + 1}`}
+                className="w-full h-32 object-cover rounded"
+                loading="lazy"
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
 }
