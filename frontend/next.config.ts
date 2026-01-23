@@ -1,19 +1,12 @@
-import type { NextConfig } from "next";
+import { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactStrictMode: true,
-  swcMinify: true, // Faster builds with SWC
   experimental: {
-    appDir: true, // Because you are using the /app directory
-    turbo: true,  // Enable Turbopack
+    turbo: true,
   },
-  typescript: {
-    ignoreBuildErrors: false, // Fail build on TS errors
+  turbopack: {
+    root: "./",
   },
-  images: {
-    domains: ["your-image-domain.com", "via.placeholder.com"], // Add any external domains used for images
-  },
-  output: "standalone", // Makes the build self-contained for deployment
 };
 
 export default nextConfig;
