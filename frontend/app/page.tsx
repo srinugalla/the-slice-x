@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabaseClient'
 import { FiPhone } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
 import Link from 'next/link'
+import ContactReveal from '@/components/ContactReveal'
 
 interface LandListing {
   land_id: number
@@ -187,25 +188,14 @@ export default function HomePage() {
                   <p className="text-sm text-gray-500">{land.area} {land.area_unit}</p>
                   <p className="text-xs text-gray-400">{land.state} / {land.district} / {land.mandal}</p>
 
-                  {/* WhatsApp button */}
+                  {/* WhatsApp / ContactReveal */}
                   {land.owner_number && (
-                    <>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setRevealedNumbers(prev => ({
-                            ...prev,
-                            [land.land_id]: !prev[land.land_id]
-                          }))
-                        }}
-                        className="mt-2 flex items-center gap-2 px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 hover:scale-105 transition-all duration-200"
-                      >
-                        <FaWhatsapp /> Contact Owner
-                      </button>
-                      {revealedNumbers[land.land_id] && (
-                        <p className="mt-1 text-sm font-medium text-gray-700">{land.owner_name ? `${land.owner_name} - ` : ''}{land.owner_number}</p>
-                      )}
-                    </>
+                    <div className="mt-2">
+                      <ContactReveal
+                        landId={land.land_id.toString()}
+                        ownerNumber={land.owner_number}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
