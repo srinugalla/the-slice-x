@@ -170,10 +170,9 @@ export default function HomePage() {
       {/* Listings */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {currentListings.map(land => {
-          const images =
-            Array.isArray(land.image_urls)
-              ? land.image_urls
-              : typeof land.image_urls === 'string'
+          const images = Array.isArray(land.image_urls)
+            ? land.image_urls
+            : typeof land.image_urls === 'string'
               ? land.image_urls.split('|').map(i => i.trim()).filter(Boolean)
               : []
 
@@ -225,9 +224,7 @@ export default function HomePage() {
 
                 {Array.from({ length: end - start + 1 }, (_, i) => start + i).map(p => (
                   <button key={p} onClick={() => goToPage(p)}
-                    className={`px-3 py-1 border rounded ${
-                      p === currentPage ? 'bg-blue-600 text-white' : ''
-                    }`}>
+                    className={`px-3 py-1 border rounded ${p === currentPage ? 'bg-blue-600 text-white' : ''}`}>
                     {p}
                   </button>
                 ))}
@@ -245,45 +242,59 @@ export default function HomePage() {
       {selectedLand && (
         <div
           onClick={() => setSelectedLand(null)}
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+        >
           <div
             onClick={e => e.stopPropagation()}
-            className="bg-white rounded-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto p-6">
-
-            <h2 className="text-2xl font-bold mb-4">
+            className="bg-white text-gray-900 rounded-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto p-6"
+          >
+            <h2 className="text-2xl font-bold mb-4 text-black">
               {selectedLand.village}, {selectedLand.mandal}
             </h2>
 
             <div className="grid md:grid-cols-2 gap-6">
+              {/* Left: Property Details */}
               <div className="space-y-2">
-                <p><b>Price:</b> ₹{formatPrice(selectedLand.total_price)}</p>
-                <p><b>Area:</b> {selectedLand.area} {selectedLand.area_unit}</p>
-                <p><b>State:</b> {selectedLand.state}</p>
-                <p><b>District:</b> {selectedLand.district}</p>
+                <p><span className="font-semibold">Price:</span> ₹{formatPrice(selectedLand.total_price)}</p>
+                <p><span className="font-semibold">Area:</span> {selectedLand.area} {selectedLand.area_unit}</p>
+                <p><span className="font-semibold">State:</span> {selectedLand.state}</p>
+                <p><span className="font-semibold">District:</span> {selectedLand.district}</p>
+                <p><span className="font-semibold">Mandal:</span> {selectedLand.mandal}</p>
+                <p><span className="font-semibold">Village:</span> {selectedLand.village}</p>
 
-                {(selectedLand.seller_name || selectedLand.phone) && (
+                {(selectedLand.seller_name || selectedLand.phone || selectedLand.seller_type) && (
                   <div className="pt-4 border-t">
-                    <h3 className="font-semibold">Seller Details</h3>
-                    {selectedLand.seller_name && <p>Name: {selectedLand.seller_name}</p>}
+                    <h3 className="font-semibold text-black mb-1">Seller Details</h3>
+                    {selectedLand.seller_name && <p><span className="font-medium">Name:</span> {selectedLand.seller_name}</p>}
                     {selectedLand.phone && (
                       <p className="flex gap-2 items-center">
-                        <FaWhatsapp className="text-green-500" /> {selectedLand.phone}
+                        <FaWhatsapp className="text-green-500" /> <span className="font-medium">Phone:</span> {selectedLand.phone}
                       </p>
                     )}
-                    {selectedLand.seller_type && <p>Type: {selectedLand.seller_type}</p>}
+                    {selectedLand.seller_type && (
+                      <p><span className="font-medium">Type:</span> <span className="capitalize">{selectedLand.seller_type}</span></p>
+                    )}
                   </div>
                 )}
               </div>
 
+              {/* Right: Images */}
               <div className="grid grid-cols-2 gap-3">
-                {(Array.isArray(selectedLand.image_urls)
-                  ? selectedLand.image_urls
-                  : typeof selectedLand.image_urls === 'string'
-                  ? selectedLand.image_urls.split('|').filter(Boolean)
-                  : []
-                ).map((img, i) => (
-                  <img key={i} src={img} className="h-32 object-cover rounded-xl" />
-                ))}
+                {(() => {
+                  const images: string[] = Array.isArray(selectedLand.image_urls)
+                    ? selectedLand.image_urls
+                    : typeof selectedLand.image_urls === 'string'
+                    ? selectedLand.image_urls.split('|').map(i => i.trim()).filter(Boolean)
+                    : []
+                  return images.map((img, i) => (
+                    <img
+                      key={i}
+                      src={img}
+                      alt={`${selectedLand.village} ${i + 1}`}
+                      className="h-32 object-cover rounded-xl"
+                    />
+                  ))
+                })()}
               </div>
             </div>
           </div>
