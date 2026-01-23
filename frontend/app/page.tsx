@@ -7,10 +7,9 @@ import { FaWhatsapp } from 'react-icons/fa'
 import Link from 'next/link'
 import ContactReveal from '@/components/ContactReveal'
 
-// Utility to format price
+// Price formatting utility
 function formatPrice(priceInLakhs: number): string {
   if (priceInLakhs >= 100) {
-    // 100 lakhs = 1 crore
     const crores = (priceInLakhs / 100).toFixed(2)
     return `${crores} Cr`
   } else {
@@ -53,12 +52,8 @@ export default function HomePage() {
 
   // Derived filter options
   const states = Array.from(new Set(listings.map(l => l.state)))
-  const districts = Array.from(
-    new Set(listings.filter(l => l.state === selectedState).map(l => l.district))
-  )
-  const mandals = Array.from(
-    new Set(listings.filter(l => l.district === selectedDistrict).map(l => l.mandal))
-  )
+  const districts = Array.from(new Set(listings.filter(l => l.state === selectedState).map(l => l.district)))
+  const mandals = Array.from(new Set(listings.filter(l => l.district === selectedDistrict).map(l => l.mandal)))
 
   // Fetch listings
   useEffect(() => {
@@ -78,6 +73,7 @@ export default function HomePage() {
     fetchListings()
   }, [])
 
+  // Apply filters
   const applyFilters = () => {
     let filtered = listings
     if (selectedState) filtered = filtered.filter(l => l.state === selectedState)
@@ -88,7 +84,7 @@ export default function HomePage() {
     )
     setFilteredListings(filtered)
     setCurrentPage(1)
-    window.scrollTo({ top: 0, behavior: 'smooth' }) // Scroll to top after filter
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const indexOfLast = currentPage * listingsPerPage
@@ -98,7 +94,7 @@ export default function HomePage() {
 
   const goToPage = (page: number) => {
     setCurrentPage(page)
-    window.scrollTo({ top: 0, behavior: 'smooth' }) // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   if (loading) return <p className="p-6 text-gray-600">Loading listings…</p>
@@ -229,64 +225,57 @@ export default function HomePage() {
       )}
 
       {/* Modal */}
-{selectedLand && (
-  <div
-    className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50"
-    onClick={() => setSelectedLand(null)} // close modal when clicking outside
-  >
-    <div
-      className="bg-white rounded-lg shadow-lg max-w-3xl w-full p-6 relative transform transition-transform duration-300 scale-95 animate-fade-in"
-      onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
-    >
-      <button
-        onClick={() => setSelectedLand(null)}
-        className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 font-bold text-xl"
-      >
-        ×
-      </button>
+      {selectedLand && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={() => setSelectedLand(null)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-lg max-w-3xl w-full p-6 relative transform transition-transform duration-300 scale-95"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-2xl font-bold mb-2">
+              {selectedLand?.village}, {selectedLand?.mandal}
+            </h2>
 
-      <h2 className="text-2xl font-bold mb-2">
-        {selectedLand.village}, {selectedLand.mandal}
-      </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1">
+                <p><span className="font-semibold">Price:</span> ₹{formatPrice(selectedLand?.total_price || 0)}</p>
+                <p><span className="font-semibold">Area:</span> {selectedLand?.area} {selectedLand?.area_unit}</p>
+                <p><span className="font-semibold">State:</span> {selectedLand?.state}</p>
+                <p><span className="font-semibold">District:</span> {selectedLand?.district}</p>
+                <p><span className="font-semibold">Mandal:</span> {selectedLand?.mandal}</p>
+                {selectedLand?.owner_name && <p><span className="font-semibold">Owner:</span> {selectedLand.owner_name}</p>}
+                {selectedLand?.owner_number && (
+                  <p className="flex items-center gap-2">
+                    <FaWhatsapp className="text-green-500" /> {selectedLand.owner_number}
+                  </p>
+                )}
+              </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Property Details */}
-        <div className="flex flex-col gap-1">
-          <p><span className="font-semibold">Price:</span> {formatPrice(selectedLand.total_price)}</p>
-          <p><span className="font-semibold">Area:</span> {selectedLand.area} {selectedLand.area_unit}</p>
-          <p><span className="font-semibold">State:</span> {selectedLand.state}</p>
-          <p><span className="font-semibold">District:</span> {selectedLand.district}</p>
-          <p><span className="font-semibold">Mandal:</span> {selectedLand.mandal}</p>
-          {selectedLand.owner_name && <p><span className="font-semibold">Owner:</span> {selectedLand.owner_name}</p>}
-          {selectedLand.owner_number && (
-            <p className="flex items-center gap-2">
-              <FaWhatsapp className="text-green-500" /> {selectedLand.owner_number}
-            </p>
-          )}
-        </div>
-
-        {/* Property Images */}
-        {selectedLand.image_urls && (
-          <div className="grid grid-cols-2 sm:grid-cols-2 gap-2">
-            {(Array.isArray(selectedLand.image_urls)
-              ? selectedLand.image_urls
-              : typeof selectedLand.image_urls === 'string'
-              ? selectedLand.image_urls.split('|').map(i => i.trim()).filter(Boolean)
-              : []
-            ).map((img, i) => (
-              <img
-                key={i}
-                src={img}
-                alt={`${selectedLand.village} ${i + 1}`}
-                className="w-full h-32 object-cover rounded"
-                loading="lazy"
-              />
-            ))}
+              {/* Images */}
+              {selectedLand?.image_urls && (
+                <div className="grid grid-cols-2 sm:grid-cols-2 gap-2">
+                  {(Array.isArray(selectedLand.image_urls)
+                    ? selectedLand.image_urls
+                    : typeof selectedLand.image_urls === 'string'
+                    ? selectedLand.image_urls.split('|').map(i => i.trim()).filter(Boolean)
+                    : []
+                  ).map((img, i) => (
+                    <img
+                      key={i}
+                      src={img}
+                      alt={`${selectedLand?.village} ${i + 1}`}
+                      className="w-full h-32 object-cover rounded"
+                      loading="lazy"
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        )}
-      </div>
-    </div>
-  </div>
-)}
-
+        </div>
+      )}
+    </main>
+  )
 }
