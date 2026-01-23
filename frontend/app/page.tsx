@@ -37,7 +37,7 @@ export default function HomePage() {
   const [currentPage, setCurrentPage] = useState(1)
   const listingsPerPage = 30
 
-  // Modal & contact
+  // Modal
   const [selectedLand, setSelectedLand] = useState<LandListing | null>(null)
 
   // Derived filter options
@@ -73,6 +73,7 @@ export default function HomePage() {
     )
     setFilteredListings(filtered)
     setCurrentPage(1)
+    window.scrollTo({ top: 0, behavior: 'smooth' }) // scroll to top on filter
   }
 
   // Pagination
@@ -81,15 +82,20 @@ export default function HomePage() {
   const currentListings = filteredListings.slice(indexOfFirst, indexOfLast)
   const totalPages = Math.ceil(filteredListings.length / listingsPerPage)
 
+  const goToPage = (page: number) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' }) // scroll to top on page change
+  }
+
   if (loading) return <p className="p-6 text-gray-600">Loading listings…</p>
   if (error) return <p className="p-6 text-red-600 font-medium">Error: {error}</p>
 
   return (
-    <main className="max-w-7xl mx-auto p-6">
+    <main className="max-w-7xl mx-auto p-6 relative">
       {/* Hero */}
       <div className="mb-8 text-center">
         <Link href="/">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-2 cursor-pointer hover:text-blue-600 transition-colors">
+          <h1 className="text-4xl font-extrabold mb-2 cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all">
             The Slice X
           </h1>
         </Link>
@@ -199,7 +205,7 @@ export default function HomePage() {
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i + 1}
-              onClick={() => setCurrentPage(i + 1)}
+              onClick={() => goToPage(i + 1)}
               className={`px-3 py-1 rounded border ${
                 currentPage === i + 1 ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
               }`}
@@ -207,6 +213,51 @@ export default function HomePage() {
               {i + 1}
             </button>
           ))}
+        </div>
+      )}
+
+      {/* Modal */}
+      {selectedLand && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full overflow-y-auto max-h-[90vh] p-6 relative animate-fade-in">
+            <button
+              onClick={() => setSelectedLand(null)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 font-bold text-2xl"
+            >
+              ×
+            </button>
+
+            <h2 className="text-2xl font-bold mb-2">{selectedLand.village}, {selectedLand.mandal}</h2>
+            <p className="mb-1 font-semibold">Price: ₹{selectedLand.total_price?.toLocaleString()}</p>
+            <p className="mb-1">Area: {selectedLand.area} {selectedLand.area_unit}</p>
+            <p className="mb-1">Location: {selectedLand.state} / {selectedLand.district} / {selectedLand.mandal}</p>
+            {selectedLand.owner_name && <p className="mt-2 font-medium">Owner: {selectedLand.owner_name}</p>}
+            {selectedLand.owner_number && (
+              <p className="flex items-center gap-2 mt-1">
+                <FaWhatsapp className="text-green-500" /> {selectedLand.owner_number}
+              </p>
+            )}
+
+            {/* All images */}
+            {selectedLand.image_urls && (
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {(Array.isArray(selectedLand.image_urls)
+                  ? selectedLand.image_urls
+                  : typeof selectedLand.image_urls === 'string'
+                  ? selectedLand.image_urls.split('|').map(i => i.trim()).filter(Boolean)
+                  : []
+                ).map((img, i) => (
+                  <img
+                    key={i}
+                    src={img}
+                    alt={`${selectedLand.village} ${i + 1}`}
+                    className="w-full h-32 object-cover rounded"
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </main>
