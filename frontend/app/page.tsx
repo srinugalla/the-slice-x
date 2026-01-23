@@ -7,6 +7,17 @@ import { FaWhatsapp } from 'react-icons/fa'
 import Link from 'next/link'
 import ContactReveal from '@/components/ContactReveal'
 
+// Utility to format price
+function formatPrice(priceInLakhs: number): string {
+  if (priceInLakhs >= 100) {
+    // 100 lakhs = 1 crore
+    const crores = (priceInLakhs / 100).toFixed(2)
+    return `${crores} Cr`
+  } else {
+    return `${priceInLakhs} Lakhs`
+  }
+}
+
 export interface LandListing {
   land_id: number
   state: string
@@ -41,9 +52,13 @@ export default function HomePage() {
   const [selectedLand, setSelectedLand] = useState<LandListing | null>(null)
 
   // Derived filter options
-  const states = Array.from(new Set(listings.map((l) => l.state)))
-  const districts = Array.from(new Set(listings.filter(l => l.state === selectedState).map((l) => l.district)))
-  const mandals = Array.from(new Set(listings.filter(l => l.district === selectedDistrict).map((l) => l.mandal)))
+  const states = Array.from(new Set(listings.map(l => l.state)))
+  const districts = Array.from(
+    new Set(listings.filter(l => l.state === selectedState).map(l => l.district))
+  )
+  const mandals = Array.from(
+    new Set(listings.filter(l => l.district === selectedDistrict).map(l => l.mandal))
+  )
 
   // Fetch listings
   useEffect(() => {
@@ -73,10 +88,9 @@ export default function HomePage() {
     )
     setFilteredListings(filtered)
     setCurrentPage(1)
-    window.scrollTo({ top: 0, behavior: 'smooth' }) // scroll to top on filter
+    window.scrollTo({ top: 0, behavior: 'smooth' }) // Scroll to top after filter
   }
 
-  // Pagination
   const indexOfLast = currentPage * listingsPerPage
   const indexOfFirst = indexOfLast - listingsPerPage
   const currentListings = filteredListings.slice(indexOfFirst, indexOfLast)
@@ -84,18 +98,18 @@ export default function HomePage() {
 
   const goToPage = (page: number) => {
     setCurrentPage(page)
-    window.scrollTo({ top: 0, behavior: 'smooth' }) // scroll to top on page change
+    window.scrollTo({ top: 0, behavior: 'smooth' }) // Scroll to top when page changes
   }
 
   if (loading) return <p className="p-6 text-gray-600">Loading listings…</p>
   if (error) return <p className="p-6 text-red-600 font-medium">Error: {error}</p>
 
   return (
-    <main className="max-w-7xl mx-auto p-6 relative">
+    <main className="max-w-7xl mx-auto p-6">
       {/* Hero */}
       <div className="mb-8 text-center">
         <Link href="/">
-          <h1 className="text-4xl font-extrabold mb-2 cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all">
+          <h1 className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-400 mb-2 cursor-pointer hover:scale-105 transition-transform">
             The Slice X
           </h1>
         </Link>
@@ -117,7 +131,7 @@ export default function HomePage() {
           className="px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">All States</option>
-          {states.map((s) => <option key={s} value={s}>{s}</option>)}
+          {states.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
         <select
           value={selectedDistrict}
@@ -126,7 +140,7 @@ export default function HomePage() {
           disabled={!selectedState}
         >
           <option value="">All Districts</option>
-          {districts.map((d) => <option key={d} value={d}>{d}</option>)}
+          {districts.map(d => <option key={d} value={d}>{d}</option>)}
         </select>
         <select
           value={selectedMandal}
@@ -135,7 +149,7 @@ export default function HomePage() {
           disabled={!selectedDistrict}
         >
           <option value="">All Mandals</option>
-          {mandals.map((m) => <option key={m} value={m}>{m}</option>)}
+          {mandals.map(m => <option key={m} value={m}>{m}</option>)}
         </select>
         <button
           onClick={applyFilters}
@@ -150,7 +164,7 @@ export default function HomePage() {
         <p className="text-gray-500">No listings found</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {currentListings.map((land) => {
+          {currentListings.map(land => {
             const images: string[] = Array.isArray(land.image_urls)
               ? land.image_urls
               : typeof land.image_urls === 'string'
@@ -163,7 +177,6 @@ export default function HomePage() {
                 className="rounded-xl border bg-white shadow hover:shadow-xl hover:scale-105 transition-all duration-200 overflow-hidden relative cursor-pointer"
                 onClick={() => setSelectedLand(land)}
               >
-                {/* Image */}
                 <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
                   {images.length > 0 ? (
                     <img
@@ -177,10 +190,9 @@ export default function HomePage() {
                   )}
                 </div>
 
-                {/* Details */}
                 <div className="p-4 flex flex-col gap-2">
                   <h2 className="text-lg font-semibold text-gray-800">{land.village}, {land.mandal}</h2>
-                  <p className="text-gray-700 font-medium">₹{land.total_price?.toLocaleString()}</p>
+                  <p className="text-gray-700 font-medium">₹{formatPrice(land.total_price)}</p>
                   <p className="text-sm text-gray-500">{land.area} {land.area_unit}</p>
                   <p className="text-xs text-gray-400">{land.state} / {land.district} / {land.mandal}</p>
 
@@ -218,17 +230,16 @@ export default function HomePage() {
 
       {/* Modal */}
       {selectedLand && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full overflow-y-auto max-h-[90vh] p-6 relative animate-fade-in">
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-3xl w-full p-6 relative transform transition-transform duration-300 scale-95 animate-fade-in">
             <button
               onClick={() => setSelectedLand(null)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 font-bold text-2xl"
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 font-bold text-xl"
             >
               ×
             </button>
-
             <h2 className="text-2xl font-bold mb-2">{selectedLand.village}, {selectedLand.mandal}</h2>
-            <p className="mb-1 font-semibold">Price: ₹{selectedLand.total_price?.toLocaleString()}</p>
+            <p className="mb-1 font-semibold">Price: ₹{formatPrice(selectedLand.total_price)}</p>
             <p className="mb-1">Area: {selectedLand.area} {selectedLand.area_unit}</p>
             <p className="mb-1">Location: {selectedLand.state} / {selectedLand.district} / {selectedLand.mandal}</p>
             {selectedLand.owner_name && <p className="mt-2 font-medium">Owner: {selectedLand.owner_name}</p>}
@@ -238,14 +249,14 @@ export default function HomePage() {
               </p>
             )}
 
-            {/* All images */}
             {selectedLand.image_urls && (
               <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {(Array.isArray(selectedLand.image_urls)
-                  ? selectedLand.image_urls
-                  : typeof selectedLand.image_urls === 'string'
-                  ? selectedLand.image_urls.split('|').map(i => i.trim()).filter(Boolean)
-                  : []
+                {(
+                  Array.isArray(selectedLand.image_urls)
+                    ? selectedLand.image_urls
+                    : typeof selectedLand.image_urls === 'string'
+                    ? selectedLand.image_urls.split('|').map(i => i.trim()).filter(Boolean)
+                    : []
                 ).map((img, i) => (
                   <img
                     key={i}
