@@ -206,21 +206,62 @@ export default function HomePage() {
           })}
         </div>
       )}
-
+      
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-6 gap-2">
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i + 1}
-              onClick={() => goToPage(i + 1)}
-              className={`px-3 py-1 rounded border ${
-                currentPage === i + 1 ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
+        <div className="flex justify-center mt-6 gap-2 overflow-x-auto py-2">
+          {(() => {
+            const maxVisible = 5
+            let startPage = Math.max(currentPage - Math.floor(maxVisible / 2), 1)
+            let endPage = startPage + maxVisible - 1
+
+            if (endPage > totalPages) {
+              endPage = totalPages
+              startPage = Math.max(endPage - maxVisible + 1, 1)
+            }
+
+            const pages = []
+            for (let i = startPage; i <= endPage; i++) {
+              pages.push(i)
+            }
+
+            return (
+              <>
+                {/* Previous Button */}
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => goToPage(currentPage - 1)}
+                  className="px-3 py-1 rounded border bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+                >
+                  ‹
+                </button>
+
+                {/* Page Numbers */}
+                {pages.map((i) => (
+                  <button
+                    key={i}
+                    onClick={() => goToPage(i)}
+                    className={`px-3 py-1 rounded border transition transform ${
+                      currentPage === i
+                        ? 'bg-blue-600 text-white scale-105'
+                        : 'bg-white text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    {i}
+                  </button>
+                ))}
+
+                {/* Next Button */}
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => goToPage(currentPage + 1)}
+                  className="px-3 py-1 rounded border bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+                >
+                  ›
+                </button>
+              </>
+            )
+          })()}
         </div>
       )}
 
