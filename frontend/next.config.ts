@@ -1,10 +1,11 @@
-import type { NextConfig } from "next";
+import { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  // You can keep turbopack settings if you want
-  turbopack: {
-    root: __dirname, // this points to 'frontend'
+  reactStrictMode: true,
+  swcMinify: true,
+  experimental: {
+    appDir: true, // enable app router
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

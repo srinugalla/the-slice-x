@@ -7,7 +7,7 @@ import { FaWhatsapp } from 'react-icons/fa'
 import Link from 'next/link'
 import ContactReveal from '@/components/ContactReveal'
 
-interface LandListing {
+export interface LandListing {
   land_id: number
   state: string
   district: string
@@ -39,26 +39,18 @@ export default function HomePage() {
 
   // Modal & contact
   const [selectedLand, setSelectedLand] = useState<LandListing | null>(null)
-  const [revealedNumbers, setRevealedNumbers] = useState<{ [key: number]: boolean }>({})
 
   // Derived filter options
   const states = Array.from(new Set(listings.map((l) => l.state)))
-  const districts = Array.from(
-    new Set(listings.filter(l => l.state === selectedState).map((l) => l.district))
-  )
-  const mandals = Array.from(
-    new Set(listings.filter(l => l.district === selectedDistrict).map((l) => l.mandal))
-  )
+  const districts = Array.from(new Set(listings.filter(l => l.state === selectedState).map((l) => l.district)))
+  const mandals = Array.from(new Set(listings.filter(l => l.district === selectedDistrict).map((l) => l.mandal)))
 
   // Fetch listings
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const { data, error } = await supabase
-          .from('land_listings')
-          .select('*')
+        const { data, error } = await supabase.from('land_listings').select('*')
         if (error) throw error
-
         setListings(data ?? [])
         setFilteredListings(data ?? [])
       } catch (err: any) {
@@ -88,8 +80,6 @@ export default function HomePage() {
   const indexOfFirst = indexOfLast - listingsPerPage
   const currentListings = filteredListings.slice(indexOfFirst, indexOfLast)
   const totalPages = Math.ceil(filteredListings.length / listingsPerPage)
-
-  const goToPage = (page: number) => setCurrentPage(page)
 
   if (loading) return <p className="p-6 text-gray-600">Loading listings…</p>
   if (error) return <p className="p-6 text-red-600 font-medium">Error: {error}</p>
@@ -188,7 +178,6 @@ export default function HomePage() {
                   <p className="text-sm text-gray-500">{land.area} {land.area_unit}</p>
                   <p className="text-xs text-gray-400">{land.state} / {land.district} / {land.mandal}</p>
 
-                  {/* WhatsApp / ContactReveal */}
                   {land.owner_number && (
                     <div className="mt-2">
                       <ContactReveal
@@ -210,7 +199,7 @@ export default function HomePage() {
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i + 1}
-              onClick={() => goToPage(i + 1)}
+              onClick={() => setCurrentPage(i + 1)}
               className={`px-3 py-1 rounded border ${
                 currentPage === i + 1 ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
               }`}
@@ -218,50 +207,6 @@ export default function HomePage() {
               {i + 1}
             </button>
           ))}
-        </div>
-      )}
-
-      {/* Modal */}
-      {selectedLand && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg max-w-3xl w-full p-6 relative transform transition-transform duration-300 scale-95 animate-fade-in">
-            <button
-              onClick={() => setSelectedLand(null)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 font-bold text-xl"
-            >
-              ×
-            </button>
-            <h2 className="text-2xl font-bold mb-2">{selectedLand.village}, {selectedLand.mandal}</h2>
-            <p className="mb-1 font-semibold">Price: ₹{selectedLand.total_price?.toLocaleString()}</p>
-            <p className="mb-1">Area: {selectedLand.area} {selectedLand.area_unit}</p>
-            <p className="mb-1">Location: {selectedLand.state} / {selectedLand.district} / {selectedLand.mandal}</p>
-            {selectedLand.owner_name && <p className="mt-2 font-medium">Owner: {selectedLand.owner_name}</p>}
-            {selectedLand.owner_number && (
-              <p className="flex items-center gap-2 mt-1">
-                <FaWhatsapp className="text-green-500" /> {selectedLand.owner_number}
-              </p>
-            )}
-
-            {selectedLand.image_urls && (
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {(
-                  Array.isArray(selectedLand.image_urls)
-                    ? selectedLand.image_urls
-                    : typeof selectedLand.image_urls === 'string'
-                    ? selectedLand.image_urls.split('|').map(i => i.trim()).filter(Boolean)
-                    : []
-                ).map((img, i) => (
-                  <img
-                    key={i}
-                    src={img}
-                    alt={`${selectedLand.village} ${i + 1}`}
-                    className="w-full h-32 object-cover rounded"
-                    loading="lazy"
-                  />
-                ))}
-              </div>
-            )}
-          </div>
         </div>
       )}
     </main>
