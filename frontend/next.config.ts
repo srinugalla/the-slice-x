@@ -1,11 +1,9 @@
-import { NextConfig } from "next";
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    turbo: true,
-  },
+  // You can keep turbopack settings if you want
   turbopack: {
-    root: "./",
+    root: __dirname, // this points to 'frontend'
   },
 };
 
