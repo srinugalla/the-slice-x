@@ -179,7 +179,7 @@ export default function HomePage() {
           return (
             <div key={land.land_id}
               onClick={() => setSelectedLand(land)}
-              className="rounded-xl border bg-white shadow hover:scale-105 transition cursor-pointer">
+              className="rounded-xl border bg-white dark:bg-gray-800 shadow hover:scale-105 transition cursor-pointer text-gray-900 dark:text-gray-100">
               <div className="h-48 bg-gray-100">
                 {images[0] ? (
                   <img src={images[0]} className="w-full h-full object-cover" />
@@ -246,7 +246,7 @@ export default function HomePage() {
         >
           <div
             onClick={e => e.stopPropagation()}
-            className="bg-white text-gray-900 rounded-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto p-6"
+            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto p-6"
           >
             <h2 className="text-2xl font-bold mb-4 text-black">
               {selectedLand.village}, {selectedLand.mandal}
