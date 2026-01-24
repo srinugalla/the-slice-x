@@ -11,7 +11,7 @@
 
 **The Slice X** is a premium online real estate marketplace for buying, selling, and exploring land properties. Designed to offer an elegant, user-friendly, and modern experience, it makes property discovery seamless and reliable.
 
-![The Slice X Logo](public/logo.png)
+![The Slice X Logo](frontend/public/logo.png)
 
 ---
 
