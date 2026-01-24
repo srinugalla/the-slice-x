@@ -2,18 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
-import { FiPhone } from 'react-icons/fi'
+import { FiPhone, FiSearch } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
 import ContactReveal from '@/components/ContactReveal'
 
-/* ---------------- Price Utility ---------------- */
 function formatPrice(priceInLakhs?: number): string {
   if (!priceInLakhs || priceInLakhs <= 0) return 'N/A'
   if (priceInLakhs >= 100) return `${(priceInLakhs / 100).toFixed(2)} Cr`
   return `${priceInLakhs} Lakhs`
 }
 
-/* ---------------- Types ---------------- */
 export interface LandListing {
   land_id: number
   state: string
@@ -31,36 +29,25 @@ export interface LandListing {
   image_urls?: string[] | string
 }
 
-/* ---------------- Page ---------------- */
 export default function HomePage() {
   const [listings, setListings] = useState<LandListing[]>([])
   const [filteredListings, setFilteredListings] = useState<LandListing[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  /* Filters */
   const [selectedState, setSelectedState] = useState('')
   const [selectedDistrict, setSelectedDistrict] = useState('')
   const [selectedMandal, setSelectedMandal] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
 
-  /* Pagination */
   const [currentPage, setCurrentPage] = useState(1)
   const listingsPerPage = 15
-
-  /* Modal */
   const [selectedLand, setSelectedLand] = useState<LandListing | null>(null)
 
-  /* Derived filters */
   const states = Array.from(new Set(listings.map(l => l.state)))
-  const districts = Array.from(
-    new Set(listings.filter(l => l.state === selectedState).map(l => l.district))
-  )
-  const mandals = Array.from(
-    new Set(listings.filter(l => l.district === selectedDistrict).map(l => l.mandal))
-  )
+  const districts = Array.from(new Set(listings.filter(l => l.state === selectedState).map(l => l.district)))
+  const mandals = Array.from(new Set(listings.filter(l => l.district === selectedDistrict).map(l => l.mandal)))
 
-  /* Fetch Listings */
   useEffect(() => {
     const fetchListings = async () => {
       try {
@@ -77,23 +64,19 @@ export default function HomePage() {
     fetchListings()
   }, [])
 
-  /* Apply Filters */
-  const applyFilters = () => {
+  const handleSearch = () => {
     let filtered = listings
     if (selectedState) filtered = filtered.filter(l => l.state === selectedState)
     if (selectedDistrict) filtered = filtered.filter(l => l.district === selectedDistrict)
     if (selectedMandal) filtered = filtered.filter(l => l.mandal === selectedMandal)
-    if (searchTerm) {
-      filtered = filtered.filter(l =>
-        l.village.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
+    if (searchTerm) filtered = filtered.filter(l =>
+      l.village.toLowerCase().includes(searchTerm.toLowerCase())
+    )
     setFilteredListings(filtered)
     setCurrentPage(1)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  /* Pagination logic */
   const indexOfLast = currentPage * listingsPerPage
   const indexOfFirst = indexOfLast - listingsPerPage
   const currentListings = filteredListings.slice(indexOfFirst, indexOfLast)
@@ -104,7 +87,6 @@ export default function HomePage() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  /* Close modal on ESC */
   useEffect(() => {
     const esc = (e: KeyboardEvent) => e.key === 'Escape' && setSelectedLand(null)
     window.addEventListener('keydown', esc)
@@ -117,82 +99,143 @@ export default function HomePage() {
   return (
     <main className="max-w-7xl mx-auto p-6">
 
-      {/* Hero */}
-      <div className="text-center mb-8">
+
+      {/* ---------------- Hero + Search Section ---------------- */}
+      <div className="mb-10 text-center">
+        {/* Hero Headline */}
         <h1 className="text-4xl sm:text-5xl font-extrabold text-black">
           Buy, Sell, and Discover Land throughout India
         </h1>
+
+        {/* Subtext */}
         <p className="mt-4 text-gray-700 text-lg sm:text-xl max-w-2xl mx-auto">
           From verified plots to trusted properties, find the best deals across the country.
         </p>
+
+        {/* Search Area */}
+        <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <input
+            type="text"
+            placeholder="Search by village"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-4 py-3 rounded-lg border w-full sm:w-64 text-black placeholder-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          />
+
+          <select
+            value={selectedState}
+            onChange={(e) => { setSelectedState(e.target.value); setSelectedDistrict(''); setSelectedMandal(''); }}
+            className="px-4 py-3 rounded-lg border text-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          >
+            <option value="">All States</option>
+            {states.map((s) => <option key={s}>{s}</option>)}
+          </select>
+
+          <select
+            value={selectedDistrict}
+            onChange={(e) => { setSelectedDistrict(e.target.value); setSelectedMandal(''); }}
+            disabled={!selectedState}
+            className="px-4 py-3 rounded-lg border text-black disabled:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          >
+            <option value="">All Districts</option>
+            {districts.map((d) => <option key={d}>{d}</option>)}
+          </select>
+
+          <select
+            value={selectedMandal}
+            onChange={(e) => setSelectedMandal(e.target.value)}
+            disabled={!selectedDistrict}
+            className="px-4 py-3 rounded-lg border text-black disabled:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          >
+            <option value="">All Mandals</option>
+            {mandals.map((m) => <option key={m}>{m}</option>)}
+          </select>
+
+          <button
+            onClick={applyFilters}
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-teal-400 text-white rounded-lg flex items-center gap-2 hover:scale-105 transition-transform"
+          >
+            <FiPhone /> Search
+          </button>
+        </div>
       </div>
 
-      {/* Search & Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6 items-center">
-        <input
-          type="text"
-          placeholder="Search by village"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-4 py-3 rounded-lg border w-full sm:w-64 text-black placeholder-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-        />
 
-        <select
-          value={selectedState}
-          onChange={(e) => { setSelectedState(e.target.value); setSelectedDistrict(''); setSelectedMandal(''); }}
-          className="px-4 py-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-        >
-          <option value="">All States</option>
-          {states.map(s => <option key={s}>{s}</option>)}
-        </select>
 
-        <select
-          value={selectedDistrict}
-          onChange={(e) => { setSelectedDistrict(e.target.value); setSelectedMandal(''); }}
-          disabled={!selectedState}
-          className="px-4 py-3 border rounded-lg text-black disabled:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-        >
-          <option value="">All Districts</option>
-          {districts.map(d => <option key={d}>{d}</option>)}
-        </select>
 
-        <select
-          value={selectedMandal}
-          onChange={(e) => setSelectedMandal(e.target.value)}
-          disabled={!selectedDistrict}
-          className="px-4 py-3 border rounded-lg text-black disabled:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-        >
-          <option value="">All Mandals</option>
-          {mandals.map(m => <option key={m}>{m}</option>)}
-        </select>
+      {/* ---------------- Ultimate Premium Search Bar ---------------- */}
+      <div className="w-full flex justify-center py-12 bg-gradient-to-r from-blue-50 via-white to-blue-50 rounded-3xl shadow-md">
+        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-5xl p-6 bg-white rounded-3xl shadow-xl transition-all duration-300 hover:shadow-2xl">
+          
+          {/* Village Input with Icon */}
+          <div className="relative flex-1">
+            <FiSearch className="absolute top-1/2 left-5 -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              type="text"
+              placeholder="Search by village"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="w-full pl-14 pr-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black placeholder-black"
+            />
+          </div>
 
-        <button
-          onClick={applyFilters}
-          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-teal-400 text-white rounded-lg flex items-center gap-2 hover:scale-105 transition-transform"
-        >
-          <FiPhone /> Search
-        </button>
+          {/* State Select */}
+          <select
+            value={selectedState}
+            onChange={e => { setSelectedState(e.target.value); setSelectedDistrict(''); setSelectedMandal('') }}
+            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black"
+          >
+            <option value="">All States</option>
+            {states.map(s => <option key={s}>{s}</option>)}
+          </select>
+
+          {/* District Select */}
+          <select
+            value={selectedDistrict}
+            onChange={e => { setSelectedDistrict(e.target.value); setSelectedMandal('') }}
+            disabled={!selectedState}
+            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black"
+          >
+            <option value="">All Districts</option>
+            {districts.map(d => <option key={d}>{d}</option>)}
+          </select>
+
+          {/* Mandal Select */}
+          <select
+            value={selectedMandal}
+            onChange={e => setSelectedMandal(e.target.value)}
+            disabled={!selectedDistrict}
+            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black"
+          >
+            <option value="">All Mandals</option>
+            {mandals.map(m => <option key={m}>{m}</option>)}
+          </select>
+
+          {/* Search Button */}
+          <button
+            onClick={handleSearch}
+            className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 hover:scale-105 transition transform shadow-lg flex items-center justify-center gap-2"
+          >
+            <FiPhone /> Search
+          </button>
+        </div>
       </div>
 
-      {/* Listings Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+      {/* ---------------- Listings ---------------- */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-10">
         {currentListings.map(land => {
           const images = Array.isArray(land.image_urls)
             ? land.image_urls
             : typeof land.image_urls === 'string'
-            ? land.image_urls.split('|').map(i => i.trim()).filter(Boolean)
-            : []
+              ? land.image_urls.split('|').map(i => i.trim()).filter(Boolean)
+              : []
 
           return (
-            <div
-              key={land.land_id}
-              onClick={() => setSelectedLand(land)}
-              className="rounded-xl border bg-white shadow hover:scale-105 transition cursor-pointer"
-            >
+            <div key={land.land_id} onClick={() => setSelectedLand(land)} className="rounded-xl border bg-white shadow hover:scale-105 transition cursor-pointer text-black">
               <div className="h-48 bg-gray-100">
-                {images[0] ? <img src={images[0]} className="w-full h-full object-cover" /> : <div className="flex h-full items-center justify-center text-gray-400">No image</div>}
+                {images[0] ? <img src={images[0]} className="w-full h-full object-cover rounded-t-xl" /> : <div className="flex h-full items-center justify-center text-gray-400">No image</div>}
               </div>
-              <div className="p-4 space-y-1">
+              <div className="p-4 space-y-1 text-black">
                 <h2 className="font-semibold">{land.village}, {land.mandal}</h2>
                 <p className="font-medium">₹{formatPrice(land.total_price)}</p>
                 <p className="text-sm">{land.area} {land.area_unit}</p>
@@ -203,9 +246,9 @@ export default function HomePage() {
         })}
       </div>
 
-      {/* Wheel-like Pagination */}
+      {/* ---------------- Wheel-like Pagination ---------------- */}
       {totalPages > 1 && (
-        <div className="w-full flex justify-center py-4">
+        <div className="w-full flex justify-center py-6">
           <div className="relative w-80 overflow-x-auto overflow-y-hidden scroll-smooth whitespace-nowrap flex items-center scrollbar-none">
             <div className="flex gap-4 items-center">
               {Array.from({ length: totalPages }, (_, i) => {
@@ -219,7 +262,7 @@ export default function HomePage() {
                       inline-flex items-center justify-center w-14 h-14 rounded-full cursor-pointer flex-shrink-0
                       transition-transform duration-300
                       ${isCurrent
-                        ? 'bg-blue-600 text-white scale-125 font-bold'
+                        ? 'bg-blue-600 text-white scale-125 font-bold shadow-lg'
                         : 'bg-white text-black border border-gray-300'}
                     `}
                   >
@@ -228,22 +271,15 @@ export default function HomePage() {
                 )
               })}
             </div>
-            {/* Center indicator line */}
             <div className="absolute left-1/2 top-0 -translate-x-1/2 h-full w-0.5 bg-blue-400 pointer-events-none"></div>
           </div>
         </div>
       )}
 
-      {/* Modal */}
+      {/* ---------------- Modal ---------------- */}
       {selectedLand && (
-        <div
-          onClick={() => setSelectedLand(null)}
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-        >
-          <div
-            onClick={e => e.stopPropagation()}
-            className="bg-white text-black rounded-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto p-6"
-          >
+        <div onClick={() => setSelectedLand(null)} className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div onClick={e => e.stopPropagation()} className="bg-white text-black rounded-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto p-6 shadow-xl">
             <h2 className="text-2xl font-bold mb-4">{selectedLand.village}, {selectedLand.mandal}</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
@@ -259,11 +295,10 @@ export default function HomePage() {
                     <h3 className="font-semibold mb-1">Seller Details</h3>
                     {selectedLand.seller_name && <p><span className="font-medium">Name:</span> {selectedLand.seller_name}</p>}
                     {selectedLand.phone && <p className="flex gap-2 items-center"><FaWhatsapp className="text-green-500" /> <span className="font-medium">Phone:</span> {selectedLand.phone}</p>}
-                    {selectedLand.seller_type && <p><span className="font-medium">Type:</span> {selectedLand.seller_type}</p>}
+                    {selectedLand.seller_type && <p><span className="font-medium">Type:</span> <span className="capitalize">{selectedLand.seller_type}</span></p>}
                   </div>
                 )}
               </div>
-
               <div className="grid grid-cols-2 gap-3">
                 {(() => {
                   const images: string[] = Array.isArray(selectedLand.image_urls)
