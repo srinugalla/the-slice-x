@@ -1,154 +1,175 @@
-<p align="center">
-  <a href="https://the-slice-x.vercel.app">
-    <img src="https://img.shields.io/badge/Deployed%20on-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel">
-  </a>
-  <img src="https://img.shields.io/badge/Next.js-13.4-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js">
-  <img src="https://img.shields.io/badge/Tailwind_CSS-3.3-blue?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
-  <img src="https://img.shields.io/badge/TypeScript-4.9-blue?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
-  <img src="https://img.shields.io/badge/Supabase-Red?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase">
-</p>
+---
 
-````markdown
-# The Slice X 🏡
+# The Slice X
 
-**The Slice X** is a modern real estate web application for browsing and discovering trusted land and property listings. Users can filter by location, view property details, and contact owners/agents directly via WhatsApp.
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+
+
+**The Slice X** is a premium online real estate marketplace for buying, selling, and exploring land properties. Designed to offer an elegant, user-friendly, and modern experience, it makes property discovery seamless and reliable.
+
+![The Slice X Logo](public/logo.png)
 
 ---
 
-## 🌟 Features
+## 🌐 Website
 
-- **Dynamic Listings:** Browse thousands of land properties with images, prices, and area details.  
-- **Advanced Filters:** Filter by state, district, mandal, or search by village/keywords.  
-- **Property Modal:** Click any property to view full details and all images.  
-- **WhatsApp Integration:** Contact property owners/agents directly.  
-- **Responsive Design:** Fully mobile and tablet-friendly.  
-- **Fast & Optimized:** Lazy-loaded images for performance.  
-- **Pagination & Infinite Scrolling Ready:** Handle thousands of listings smoothly.
+[Visit The Slice X](https://www.theslicex.com)
 
 ---
 
-## 🎨 Technology Stack
+## 📌 Features
 
-| Frontend           | Backend / DB      | Deployment            |
-|-------------------|-----------------|----------------------|
-| Next.js 16.1.4    | Supabase         | Vercel / Hostinger   |
-| TypeScript        | PostgreSQL       | Tailwind CSS         |
-| React Icons       |                 |                      |
+### 1. Elegant Property Search
+- Filter by **state, district, mandal, village**.
+- Real-time search with smooth, responsive UI.
+- Premium mobile-first design inspired by modern apps.
 
----
-
-## 🚀 Live Demo
-
-🌐 [View Slice X Live](https://the-slice-x.vercel.app)  
+**Animated GIF Preview:**  
+![Search Animation](public/gifs/search-bar.gif)
 
 ---
 
-## 🏗 Getting Started
+### 2. Property Listings
+- High-quality images with gallery view.
+- Display price in **Lakhs/Cr**.
+- Seller and owner contact details with optional reveal.
 
-### Prerequisites
+**Animated GIF Preview:**  
+![Listings Animation](public/gifs/listings.gif)
 
-- Node.js >= 18
-- npm or yarn
-- Supabase account
-- Git
+---
 
-### Installation
+### 3. Wheel-like Pagination
+- Smooth horizontal scroll with **center-highlight effect**.
+- Interactive and visually appealing.
 
-1. Clone the repository:
+**Animated GIF Preview:**  
+![Wheel Pagination Animation](public/gifs/wheel-pagination.gif)
 
-```bash
-git clone https://github.com/srinugalla/the-slice-x.git
-cd the-slice-x
-````
+---
 
-2. Install dependencies:
+### 4. Mobile Responsive View
+- Fully optimized for small screens.
+- Clean, readable fonts and intuitive layout.
 
-```bash
-npm install
-# or
-yarn install
-```
+**Animated GIF Preview:**  
+![Mobile View Animation](public/gifs/mobile-view.gif)
 
-3. Configure environment variables:
+---
 
-Create a `.env.local` file:
+## 🛠 Tech Stack
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-```
-
-4. Run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+- **Frontend:** Next.js 13, React 18  
+- **Styling:** TailwindCSS  
+- **Icons:** React Icons, Lucide-React  
+- **Backend:** Supabase  
+- **Deployment:** Vercel  
 
 ---
 
 ## 📂 Project Structure
 
+```text
+frontend/
+├─ app/
+│  ├─ page.tsx
+│  ├─ layout.tsx
+│  └─ globals.css
+├─ components/
+│  ├─ Header.tsx
+│  ├─ Footer.tsx
+│  └─ ContactReveal.tsx
+├─ lib/
+│  └─ supabaseClient.ts
+├─ public/
+│  ├─ logo.png
+│  ├─ favicon.png
+│  ├─ gifs/
+│  │  ├─ search-bar.gif
+│  │  ├─ listings.gif
+│  │  ├─ wheel-pagination.gif
+│  │  └─ mobile-view.gif
+├─ package.json
+└─ README.md
+````
+
+---
+
+## ⚡ Installation
+
+1. Clone the repo:
+
+```bash
+git clone https://github.com/srinugalla/the-slice-x.git
+cd the-slice-x/frontend
 ```
-/app
-  page.tsx          # Main homepage with listings & modal
-/lib
-  supabaseClient.ts # Supabase client config
-/components         # Optional reusable UI components
-/public             # Static assets
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Setup environment variables:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+4. Run the dev server:
+
+```bash
+npm run dev
+```
+
+Visit `http://localhost:3000`.
+
+---
+
+## 🚀 Deployment
+
+Optimized for **Vercel**:
+
+```bash
+vercel
 ```
 
 ---
 
-## 🖼 Screenshots
+## 🎨 Design Inspiration
 
-| Home Page                     | Property Modal                  |
-| ----------------------------- | ------------------------------- |
-| ![Home](screenshots/home.png) | ![Modal](screenshots/modal.png) |
+Inspired by **premium real estate websites** like:
 
-*Replace `screenshots/` with actual screenshots.*
-
----
-
-## ⚡ Deployment
-
-**Vercel Deployment (Recommended for Next.js):**
-
-1. Push your repo to GitHub.
-2. Go to [Vercel](https://vercel.com/) → Import your GitHub repo.
-3. Vercel auto-detects Next.js and deploys.
-4. Add your custom domain (Hostinger domain) in Vercel settings.
-5. Update DNS records in Hostinger according to Vercel instructions.
-
-✅ Automatic SSL included.
-
----
-
-## 💡 Future Enhancements
-
-* Infinite scroll for seamless browsing of 10k+ listings
-* User authentication (save favorites, track searches)
-* Seller dashboard to add/edit listings
-* Market insights with charts (price, area trends)
-* Notifications when new properties are added
+* [FullScale.ie](https://fullscale.ie)
+* Modern mobile-first apps with smooth animations and minimal design.
 
 ---
 
 ## 📞 Contact
 
-* **Owner:** Srinugalla
-* **GitHub:** [https://github.com/srinugalla](https://github.com/srinugalla)
-* **Project Repo:** [https://github.com/srinugalla/the-slice-x](https://github.com/srinugalla/the-slice-x)
+For support or inquiries:
+
+* Email: [support@theslicex.com](mailto:support@theslicex.com)
+* Website: [https://www.theslicex.com](https://www.theslicex.com)
 
 ---
 
-## 📝 License
+## 💡 Future Enhancements
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+* Hamburger menu on mobile
+* Favorites/Wishlist
+* User Authentication & Profiles
+* Interactive Map View
+* Dark Mode Toggle
 
 ---
 
-**The Slice X** — Trusted properties you can rely on. 🏡
+## ⚖️ License
+
+MIT License © 2026 [The Slice X](https://www.theslicex.com)
+
