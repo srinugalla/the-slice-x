@@ -166,10 +166,13 @@ export default function HomePage() {
       </div>
       
 
-      {/* Wheel-like Pagination (5 pages visible, smooth scroll) */}
+      {/* Wheel-like Pagination */}
       {totalPages > 1 && (
         <div className="w-full overflow-x-auto scroll-smooth py-4">
-          <div className="flex gap-4 px-4 snap-x snap-mandatory">
+          <div
+            className="inline-flex gap-4 px-[50%] snap-x snap-mandatory"
+            style={{ scrollPaddingLeft: '50%', scrollPaddingRight: '50%' }}
+          >
             {(() => {
               const visibleCount = 5
               let startPage = Math.max(1, currentPage - 2)
@@ -188,7 +191,7 @@ export default function HomePage() {
                     key={page}
                     onClick={() => goToPage(page)}
                     className={`
-                      w-12 h-12 flex items-center justify-center rounded-full border flex-shrink-0 cursor-pointer
+                      w-16 h-16 flex items-center justify-center rounded-full border flex-shrink-0 cursor-pointer
                       snap-center transition-all duration-300
                       ${isCurrent ? 'bg-blue-600 text-white font-bold scale-125' : 'bg-white text-black'}
                     `}
@@ -201,7 +204,6 @@ export default function HomePage() {
           </div>
         </div>
       )}
-
 
       {/* Modal */}
       {selectedLand && (
