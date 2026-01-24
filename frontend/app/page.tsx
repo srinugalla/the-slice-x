@@ -111,7 +111,7 @@ export default function HomePage() {
               placeholder="Search by village"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-14 pr-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01]"
+              className="w-full pl-14 pr-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black placeholder-black"
             />
           </div>
 
@@ -119,7 +119,7 @@ export default function HomePage() {
           <select
             value={selectedState}
             onChange={e => { setSelectedState(e.target.value); setSelectedDistrict(''); setSelectedMandal('') }}
-            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01]"
+            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black"
           >
             <option value="">All States</option>
             {states.map(s => <option key={s}>{s}</option>)}
@@ -130,7 +130,7 @@ export default function HomePage() {
             value={selectedDistrict}
             onChange={e => { setSelectedDistrict(e.target.value); setSelectedMandal('') }}
             disabled={!selectedState}
-            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01]"
+            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black"
           >
             <option value="">All Districts</option>
             {districts.map(d => <option key={d}>{d}</option>)}
@@ -141,7 +141,7 @@ export default function HomePage() {
             value={selectedMandal}
             onChange={e => setSelectedMandal(e.target.value)}
             disabled={!selectedDistrict}
-            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01]"
+            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black"
           >
             <option value="">All Mandals</option>
             {mandals.map(m => <option key={m}>{m}</option>)}
