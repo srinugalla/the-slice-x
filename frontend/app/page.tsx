@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { FiPhone, FiSearch } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
-import ContactReveal from '@/components/ContactReveal'
+import ListingCard from "@/components/ListingCard"
+
 
 function formatPrice(priceInLakhs?: number): string {
   if (!priceInLakhs || priceInLakhs <= 0) return 'N/A'
@@ -19,6 +20,7 @@ export interface LandListing {
   mandal: string
   village: string
   total_price: number
+  price_per_acer?: number
   area: number
   area_unit: string
   seller_name?: string
@@ -177,28 +179,15 @@ export default function HomePage() {
 
       {/* ---------------- Listings Grid ---------------- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {currentListings.map(land => {
-          const images = Array.isArray(land.image_urls)
-            ? land.image_urls
-            : typeof land.image_urls === 'string'
-              ? land.image_urls.split('|').map(i => i.trim()).filter(Boolean)
-              : []
-
-          return (
-            <div key={land.land_id} onClick={() => setSelectedLand(land)} className="rounded-xl border bg-white shadow hover:scale-105 transition cursor-pointer text-black">
-              <div className="h-48 bg-gray-100">
-                {images[0] ? <img src={images[0]} className="w-full h-full object-cover rounded-t-xl" /> : <div className="flex h-full items-center justify-center text-gray-400">No image</div>}
-              </div>
-              <div className="p-4 space-y-1 text-black">
-                <h2 className="font-semibold">{land.village}, {land.mandal}</h2>
-                <p className="font-medium">₹{formatPrice(land.total_price)}</p>
-                <p className="text-sm">{land.area} {land.area_unit}</p>
-                {land.owner_number && <ContactReveal landId={land.land_id.toString()} ownerNumber={land.owner_number} />}
-              </div>
-            </div>
-          )
-        })}
+        {currentListings.map((land) => (
+          <ListingCard
+            key={land.land_id}
+            land={land}
+            onClick={() => setSelectedLand(land)}
+          />
+        ))}
       </div>
+
 
       {/* ---------------- Wheel-like Pagination ---------------- */}
       {totalPages > 1 && (
