@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { FiPhone } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
-import Link from 'next/link'
 import ContactReveal from '@/components/ContactReveal'
 
 /* ---------------- Price Utility ---------------- */
@@ -72,16 +71,14 @@ export default function HomePage() {
     fetchListings()
   }, [])
 
-  const applyFilters = () => {
+  const handleSearch = () => {
     let filtered = listings
     if (selectedState) filtered = filtered.filter(l => l.state === selectedState)
     if (selectedDistrict) filtered = filtered.filter(l => l.district === selectedDistrict)
     if (selectedMandal) filtered = filtered.filter(l => l.mandal === selectedMandal)
-    if (searchTerm) {
-      filtered = filtered.filter(l =>
-        l.village.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
+    if (searchTerm) filtered = filtered.filter(l =>
+      l.village.toLowerCase().includes(searchTerm.toLowerCase())
+    )
     setFilteredListings(filtered)
     setCurrentPage(1)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -109,35 +106,70 @@ export default function HomePage() {
   return (
     <main className="max-w-7xl mx-auto p-6">
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6 items-center">
-        <input
-          placeholder="Search by village"
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          className="px-4 py-2 rounded border w-full sm:w-64"
-        />
-        <select value={selectedState} onChange={e => { setSelectedState(e.target.value); setSelectedDistrict(''); setSelectedMandal('') }} className="px-4 py-2 border rounded">
-          <option value="">All States</option>
-          {states.map(s => <option key={s}>{s}</option>)}
-        </select>
-        <select value={selectedDistrict} onChange={e => { setSelectedDistrict(e.target.value); setSelectedMandal('') }} disabled={!selectedState} className="px-4 py-2 border rounded">
-          <option value="">All Districts</option>
-          {districts.map(d => <option key={d}>{d}</option>)}
-        </select>
-        <select value={selectedMandal} onChange={e => setSelectedMandal(e.target.value)} disabled={!selectedDistrict} className="px-4 py-2 border rounded">
-          <option value="">All Mandals</option>
-          {mandals.map(m => <option key={m}>{m}</option>)}
-        </select>
-        <button onClick={applyFilters} className="px-4 py-2 bg-blue-600 text-white rounded flex gap-2">
-          <FiPhone /> Search
-        </button>
+      {/* ---------------- Elegant Search Bar ---------------- */}
+      <div className="w-full flex justify-center py-8">
+        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-5xl p-4 bg-white rounded-3xl shadow-lg">
+          
+          {/* Village Input */}
+          <input
+            type="text"
+            placeholder="Search by village"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition"
+          />
+
+          {/* State Select */}
+          <select
+            value={selectedState}
+            onChange={e => { setSelectedState(e.target.value); setSelectedDistrict(''); setSelectedMandal('') }}
+            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition"
+          >
+            <option value="">All States</option>
+            {states.map(s => <option key={s}>{s}</option>)}
+          </select>
+
+          {/* District Select */}
+          <select
+            value={selectedDistrict}
+            onChange={e => { setSelectedDistrict(e.target.value); setSelectedMandal('') }}
+            disabled={!selectedState}
+            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition"
+          >
+            <option value="">All Districts</option>
+            {districts.map(d => <option key={d}>{d}</option>)}
+          </select>
+
+          {/* Mandal Select */}
+          <select
+            value={selectedMandal}
+            onChange={e => setSelectedMandal(e.target.value)}
+            disabled={!selectedDistrict}
+            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition"
+          >
+            <option value="">All Mandals</option>
+            {mandals.map(m => <option key={m}>{m}</option>)}
+          </select>
+
+          {/* Search Button */}
+          <button
+            onClick={handleSearch}
+            className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition shadow-lg flex items-center justify-center"
+          >
+            <FiPhone /> Search
+          </button>
+        </div>
       </div>
 
-      {/* Listings */}
+      {/* ---------------- Listings ---------------- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {currentListings.map(land => {
-          const images = Array.isArray(land.image_urls) ? land.image_urls : typeof land.image_urls === 'string' ? land.image_urls.split('|').map(i => i.trim()).filter(Boolean) : []
+          const images = Array.isArray(land.image_urls)
+            ? land.image_urls
+            : typeof land.image_urls === 'string'
+              ? land.image_urls.split('|').map(i => i.trim()).filter(Boolean)
+              : []
+
           return (
             <div key={land.land_id} onClick={() => setSelectedLand(land)} className="rounded-xl border bg-white shadow hover:scale-105 transition cursor-pointer text-black">
               <div className="h-48 bg-gray-100">
@@ -153,11 +185,10 @@ export default function HomePage() {
           )
         })}
       </div>
-      
-      {/* Wheel-like Pagination */}
+
+      {/* ---------------- Pagination ---------------- */}
       {totalPages > 1 && (
         <div className="w-full flex justify-center py-4">
-          {/* Container: fixed width viewport showing 5 pages */}
           <div className="relative w-80 overflow-x-auto overflow-y-hidden scroll-smooth whitespace-nowrap flex items-center scrollbar-none">
             <div className="flex gap-4 items-center">
               {Array.from({ length: totalPages }, (_, i) => {
@@ -171,7 +202,7 @@ export default function HomePage() {
                       inline-flex items-center justify-center w-14 h-14 rounded-full cursor-pointer flex-shrink-0
                       transition-transform duration-300
                       ${isCurrent
-                        ? 'bg-blue-600 text-white scale-125 font-bold' // no border here
+                        ? 'bg-blue-600 text-white scale-125 font-bold'
                         : 'bg-white text-black border border-gray-300'}
                     `}
                   >
@@ -180,15 +211,12 @@ export default function HomePage() {
                 )
               })}
             </div>
-
-            {/* Center indicator line */}
             <div className="absolute left-1/2 top-0 -translate-x-1/2 h-full w-0.5 bg-blue-400 pointer-events-none"></div>
           </div>
         </div>
       )}
 
-
-      {/* Modal */}
+      {/* ---------------- Modal ---------------- */}
       {selectedLand && (
         <div onClick={() => setSelectedLand(null)} className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div onClick={e => e.stopPropagation()} className="bg-white text-black rounded-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto p-6">
@@ -211,7 +239,6 @@ export default function HomePage() {
                   </div>
                 )}
               </div>
-
               <div className="grid grid-cols-2 gap-3">
                 {(() => {
                   const images: string[] = Array.isArray(selectedLand.image_urls)
