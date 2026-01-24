@@ -28,9 +28,10 @@ function formatPrice(price?: number): string {
 
 interface ListingCardProps {
   land: LandListing
+  onClick?: () => void // <-- optional click handler
 }
 
-export default function ListingCard({ land }: ListingCardProps) {
+export default function ListingCard({ land, onClick }: ListingCardProps) {
   const images: string[] = Array.isArray(land.image_urls)
     ? land.image_urls
     : typeof land.image_urls === "string"
@@ -38,7 +39,10 @@ export default function ListingCard({ land }: ListingCardProps) {
     : []
 
   return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition cursor-pointer">
+    <div
+      onClick={onClick} // <-- use the optional onClick
+      className="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition cursor-pointer"
+    >
       {/* Image */}
       <div className="relative w-full h-48">
         {images.length > 0 ? (
@@ -55,7 +59,7 @@ export default function ListingCard({ land }: ListingCardProps) {
         )}
       </div>
 
-      {/* Info */}
+      {/* Card Content */}
       <div className="p-4 flex flex-col gap-2">
         <h2 className="text-lg font-semibold text-gray-800">
           {land.village}, {land.mandal}
@@ -75,15 +79,10 @@ export default function ListingCard({ land }: ListingCardProps) {
 
         {/* Area */}
         <p className="text-sm text-gray-500">
-          Area: {land.area} {land.area_unit}
+          {land.area} {land.area_unit}
         </p>
 
-        {/* State / District / Mandal */}
-        <p className="text-xs text-gray-400">
-          {land.state} / {land.district} / {land.mandal}
-        </p>
-
-        {/* Owner Reveal */}
+        {/* Seller / Owner Reveal */}
         {land.owner_number && (
           <div className="mt-2">
             <ContactReveal
