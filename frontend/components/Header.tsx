@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Menu, X } from 'lucide-react'
+import { FiMenu, FiX } from 'react-icons/fi'
 
 export default function Header() {
   const [open, setOpen] = useState(false)
@@ -21,7 +21,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-black">
           <Link href="/blog" className="hover:text-blue-600">Blog</Link>
           <Link href="/about" className="hover:text-blue-600">About</Link>
           <Link href="/contact" className="hover:text-blue-600">Contact</Link>
@@ -37,17 +37,17 @@ export default function Header() {
         {/* Mobile Hamburger */}
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden"
+          className="md:hidden text-black"
           aria-label="Toggle menu"
         >
-          {open ? <X size={24} /> : <Menu size={24} />}
+          {open ? <FiX size={24} /> : <FiMenu size={24} />}
         </button>
       </div>
 
       {/* Mobile Menu */}
       {open && (
         <div className="md:hidden border-t bg-white">
-          <div className="flex flex-col px-6 py-4 gap-4 text-sm">
+          <div className="flex flex-col px-6 py-4 gap-4 text-sm text-black">
             <Link href="/blog" onClick={() => setOpen(false)}>Blog</Link>
             <Link href="/about" onClick={() => setOpen(false)}>About</Link>
             <Link href="/contact" onClick={() => setOpen(false)}>Contact</Link>
