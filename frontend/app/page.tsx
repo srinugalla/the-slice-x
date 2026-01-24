@@ -165,35 +165,36 @@ export default function HomePage() {
         })}
       </div>
       
-      {/* Infinite Wheel Pagination - 5 visible pages */}
+
+      {/* Infinite Wheel Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-8 items-center gap-2 overflow-x-hidden">
-          {(() => {
-            const visibleCount = 5
-            const pages: number[] = []
-
-            // Calculate start index for 5-page window
-            let start = currentPage - 3
-            if (start < 1) start = totalPages + start // loop back
-            for (let i = 0; i < visibleCount; i++) {
-              const page = ((start + i - 1) % totalPages) + 1
-              pages.push(page)
-            }
-
-            return pages.map((p, idx) => (
-              <div
-                key={idx}
-                onClick={() => goToPage(p)}
-                className={`w-12 h-12 flex items-center justify-center rounded-full border cursor-pointer transition-all ${
-                  p === currentPage ? 'bg-blue-600 text-white font-bold scale-110' : 'bg-white text-black'
-                }`}
-              >
-                {p}
-              </div>
-            ))
-          })()}
+        <div className="relative w-full overflow-x-hidden flex justify-center items-center mt-8">
+          <div
+            className="flex gap-4 transition-transform duration-300"
+            style={{
+              transform: `translateX(-${(currentPage - 3) * 64}px)`, // 64px per page button width
+            }}
+          >
+            {Array.from({ length: totalPages * 3 }, (_, i) => {
+              // replicate pages 3 times to allow infinite looping
+              const page = (i % totalPages) + 1
+              const isCurrent = page === currentPage
+              return (
+                <div
+                  key={i}
+                  onClick={() => goToPage(page)}
+                  className={`w-12 h-12 flex items-center justify-center rounded-full border cursor-pointer flex-shrink-0 transition-all ${
+                    isCurrent ? 'bg-blue-600 text-white font-bold scale-110' : 'bg-white text-black'
+                  }`}
+                >
+                  {page}
+                </div>
+              )
+            })}
+          </div>
         </div>
       )}
+
 
       {/* Modal */}
       {selectedLand && (
