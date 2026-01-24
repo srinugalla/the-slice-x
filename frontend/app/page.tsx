@@ -3,9 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import { FiPhone, FiSearch } from 'react-icons/fi'
-import { FaWhatsapp } from 'react-icons/fa'
-import ListingCard from "@/components/ListingCard"
-
+import ListingCard from '@/components/ListingCard'
 
 function formatPrice(priceInLakhs?: number): string {
   if (!priceInLakhs || priceInLakhs <= 0) return 'N/A'
@@ -26,8 +24,6 @@ export interface LandListing {
   seller_name?: string
   phone?: string
   seller_type?: string
-  owner_name?: string
-  owner_number?: string
   image_urls?: string[] | string
 }
 
@@ -53,23 +49,23 @@ export default function HomePage() {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const { data, error } = await supabase.from('land_listings').select(`
-    land_id,
-    state,
-    district,
-    mandal,
-    village,
-    total_price,
-    price_per_acre,
-    area,
-    area_unit,
-    seller_name,
-    phone,
-    seller_type,
-    owner_name,
-    owner_number,
-    image_urls
-  `)
+        // Ensure Supabase query includes price_per_acre and seller info
+        const { data, error } = await supabase.from('land_listings')
+          .select(`
+            land_id,
+            state,
+            district,
+            mandal,
+            village,
+            total_price,
+            price_per_acre,
+            area,
+            area_unit,
+            seller_name,
+            seller_type,
+            phone,
+            image_urls
+          `)
         if (error) throw error
         setListings(data ?? [])
         setFilteredListings(data ?? [])
@@ -117,92 +113,79 @@ export default function HomePage() {
   return (
     <main className="max-w-7xl mx-auto p-6">
 
-
       {/* ---------------- Hero + Search Section ---------------- */}
-      <div className="mb-10 text-center px-4 sm:px-0">
+      <div className="mb-10 text-center">
         {/* Hero Headline */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-snug text-gray-900 dark:text-white">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-black dark:text-white">
           Buy, Sell, and Discover Land throughout India
         </h1>
 
         {/* Subtext */}
-        <p className="mt-4 text-base sm:text-lg md:text-xl max-w-2xl mx-auto text-gray-700 dark:text-gray-300">
+        <p className="mt-4 text-gray-700 dark:text-gray-300 text-lg sm:text-xl max-w-2xl mx-auto">
           From verified plots to trusted properties, find the best deals across the country.
         </p>
 
+        {/* Search Area */}
+        <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <input
+            type="text"
+            placeholder="Search by village"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-4 py-3 rounded-lg border w-full sm:w-64 text-black placeholder-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          />
 
-        {/* Premium Search Area */}
-        <div className="mt-10 flex justify-center">
-          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-5xl p-6 bg-white rounded-3xl shadow-lg transition-all duration-300 hover:shadow-2xl">
-            
-            {/* Village Input with Icon */}
-            <div className="relative flex-1">
-              <FiSearch className="absolute top-1/2 left-5 -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="text"
-                placeholder="Search by village"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                className="w-full pl-14 pr-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black placeholder-black"
-              />
-            </div>
+          <select
+            value={selectedState}
+            onChange={(e) => { setSelectedState(e.target.value); setSelectedDistrict(''); setSelectedMandal(''); }}
+            className="px-4 py-3 rounded-lg border text-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          >
+            <option value="">All States</option>
+            {states.map((s) => <option key={s}>{s}</option>)}
+          </select>
 
-            {/* State Select */}
-            <select
-              value={selectedState}
-              onChange={e => { setSelectedState(e.target.value); setSelectedDistrict(''); setSelectedMandal('') }}
-              className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black"
-            >
-              <option value="">All States</option>
-              {states.map(s => <option key={s}>{s}</option>)}
-            </select>
+          <select
+            value={selectedDistrict}
+            onChange={(e) => { setSelectedDistrict(e.target.value); setSelectedMandal(''); }}
+            disabled={!selectedState}
+            className="px-4 py-3 rounded-lg border text-black disabled:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          >
+            <option value="">All Districts</option>
+            {districts.map((d) => <option key={d}>{d}</option>)}
+          </select>
 
-            {/* District Select */}
-            <select
-              value={selectedDistrict}
-              onChange={e => { setSelectedDistrict(e.target.value); setSelectedMandal('') }}
-              disabled={!selectedState}
-              className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black disabled:bg-gray-100"
-            >
-              <option value="">All Districts</option>
-              {districts.map(d => <option key={d}>{d}</option>)}
-            </select>
+          <select
+            value={selectedMandal}
+            onChange={(e) => setSelectedMandal(e.target.value)}
+            disabled={!selectedDistrict}
+            className="px-4 py-3 rounded-lg border text-black disabled:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          >
+            <option value="">All Mandals</option>
+            {mandals.map((m) => <option key={m}>{m}</option>)}
+          </select>
 
-            {/* Mandal Select */}
-            <select
-              value={selectedMandal}
-              onChange={e => setSelectedMandal(e.target.value)}
-              disabled={!selectedDistrict}
-              className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black disabled:bg-gray-100"
-            >
-              <option value="">All Mandals</option>
-              {mandals.map(m => <option key={m}>{m}</option>)}
-            </select>
-
-            {/* Search Button */}
-            <button
-              onClick={handleSearch}
-              className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 hover:scale-105 transition transform shadow-lg flex items-center justify-center gap-2"
-            >
-              <FiPhone /> Search
-            </button>
-          </div>
+          <button
+            onClick={handleSearch}
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-teal-400 text-white rounded-lg flex items-center gap-2 hover:scale-105 transition-transform"
+          >
+            <FiPhone /> Search
+          </button>
         </div>
       </div>
 
       {/* ---------------- Latest Listings Header ---------------- */}
-      <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-black px-4 sm:px-0">Latest Listings</h2>
+      <h2 className="text-2xl font-bold mb-4 text-black dark:text-white">Latest Listings</h2>
+
       {/* ---------------- Listings Grid ---------------- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-6">
         {currentListings.map((land) => (
           <ListingCard
             key={land.land_id}
             land={land}
-            onClick={() => setSelectedLand(land)}
+            onReveal={() => setSelectedLand(land)}
           />
         ))}
       </div>
-
 
       {/* ---------------- Wheel-like Pagination ---------------- */}
       {totalPages > 1 && (
@@ -234,14 +217,15 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* ---------------- Modal ---------------- */}
+      {/* ---------------- Modal for Selected Land ---------------- */}
       {selectedLand && (
         <div onClick={() => setSelectedLand(null)} className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div onClick={e => e.stopPropagation()} className="bg-white text-black rounded-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto p-6 shadow-xl">
+          <div onClick={e => e.stopPropagation()} className="bg-white dark:bg-gray-800 text-black dark:text-white rounded-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto p-6 shadow-xl">
             <h2 className="text-2xl font-bold mb-4">{selectedLand.village}, {selectedLand.mandal}</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <p><span className="font-semibold">Price:</span> ₹{formatPrice(selectedLand.total_price)}</p>
+                <p><span className="font-semibold">Total Price:</span> ₹{formatPrice(selectedLand.total_price)}</p>
+                {selectedLand.price_per_acre && <p><span className="font-semibold">Price per Acre:</span> ₹{formatPrice(selectedLand.price_per_acre)}</p>}
                 <p><span className="font-semibold">Area:</span> {selectedLand.area} {selectedLand.area_unit}</p>
                 <p><span className="font-semibold">State:</span> {selectedLand.state}</p>
                 <p><span className="font-semibold">District:</span> {selectedLand.district}</p>
@@ -252,7 +236,7 @@ export default function HomePage() {
                   <div className="pt-4 border-t">
                     <h3 className="font-semibold mb-1">Seller Details</h3>
                     {selectedLand.seller_name && <p><span className="font-medium">Name:</span> {selectedLand.seller_name}</p>}
-                    {selectedLand.phone && <p className="flex gap-2 items-center"><FaWhatsapp className="text-green-500" /> <span className="font-medium">Phone:</span> {selectedLand.phone}</p>}
+                    {selectedLand.phone && <p><span className="flex gap-2 items-center"><FiPhone className="text-green-500" /> <span className="font-medium">Phone:</span> {selectedLand.phone}</p>}
                     {selectedLand.seller_type && <p><span className="font-medium">Type:</span> <span className="capitalize">{selectedLand.seller_type}</span></p>}
                   </div>
                 )}
