@@ -9,7 +9,7 @@ interface LandListing {
   mandal: string
   village: string
   total_price: number
-  price_per_acer?: number
+  price_per_acre?: number
   area: number
   area_unit: string
   seller_name?: string
@@ -71,9 +71,9 @@ export default function ListingCard({ land, onClick }: ListingCardProps) {
         </p>
 
         {/* Price per Acre */}
-        {land.price_per_acer && (
+        {land.price_per_acre && (
           <p className="text-sm text-gray-600">
-            Price per Acre: ₹{formatPrice(land.price_per_acer)}
+            Price per Acre: ₹{formatPrice(land.price_per_acre)}
           </p>
         )}
 

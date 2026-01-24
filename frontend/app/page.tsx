@@ -20,7 +20,7 @@ export interface LandListing {
   mandal: string
   village: string
   total_price: number
-  price_per_acer?: number
+  price_per_acre?: number
   area: number
   area_unit: string
   seller_name?: string
@@ -60,7 +60,7 @@ export default function HomePage() {
     mandal,
     village,
     total_price,
-    price_per_acer,
+    price_per_acre,
     area,
     area_unit,
     seller_name,
