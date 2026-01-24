@@ -233,13 +233,28 @@ export default function HomePage() {
                 <p><span className="font-semibold">Village:</span> {selectedLand.village}</p>
 
                 {(selectedLand.seller_name || selectedLand.phone || selectedLand.seller_type) && (
-                  <div className="pt-4 border-t">
-                    <h3 className="font-semibold mb-1">Seller Details</h3>
-                    {selectedLand.seller_name && <p><span className="font-medium">Name:</span> {selectedLand.seller_name}</p>}
-                    {selectedLand.phone && <p><span className="flex gap-2 items-center"><FiPhone className="text-green-500" /> <span className="font-medium">Phone:</span> {selectedLand.phone}</p>}
-                    {selectedLand.seller_type && <p><span className="font-medium">Type:</span> <span className="capitalize">{selectedLand.seller_type}</span></p>}
-                  </div>
-                )}
+                <div className="pt-4 border-t">
+                  <h3 className="font-semibold mb-1">Seller Details</h3>
+                  {selectedLand.seller_name && (
+                    <p>
+                      <span className="font-medium">Name:</span> {selectedLand.seller_name}
+                    </p>
+                  )}
+                  {selectedLand.phone && (
+                    <p className="flex gap-2 items-center">
+                      <FiPhone className="text-green-500" />
+                      <span className="font-medium">Phone:</span> {selectedLand.phone}
+                    </p>
+                  )}
+                  {selectedLand.seller_type && (
+                    <p>
+                      <span className="font-medium">Type:</span>{' '}
+                      <span className="capitalize">{selectedLand.seller_type}</span>
+                    </p>
+                  )}
+                </div>
+              )}
+
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {(() => {
