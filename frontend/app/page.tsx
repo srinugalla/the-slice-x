@@ -85,9 +85,16 @@ export default function HomePage() {
     if (selectedState) filtered = filtered.filter(l => l.state === selectedState)
     if (selectedDistrict) filtered = filtered.filter(l => l.district === selectedDistrict)
     if (selectedMandal) filtered = filtered.filter(l => l.mandal === selectedMandal)
-    if (searchTerm) filtered = filtered.filter(l =>
-      l.village.toLowerCase().includes(searchTerm.toLowerCase())
+    if (searchTerm) {
+      const term = searchTerm.trim().toLowerCase()
+      filtered = filtered.filter(l =>
+      l.village?.toLowerCase().includes(term) ||
+      l.mandal?.toLowerCase().includes(term) ||
+      l.district?.toLowerCase().includes(term)
+    
+
     )
+  }
     setFilteredListings(filtered)
     setCurrentPage(1)
     window.scrollTo({ top: 0, behavior: 'smooth' })
