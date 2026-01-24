@@ -1,50 +1,70 @@
+'use client'
+
 import Link from 'next/link'
-import Image from 'next/image'
+import { useState } from 'react'
+import { Menu, X } from 'lucide-react'
 
 export default function Header() {
+  const [open, setOpen] = useState(false)
+
   return (
-    <header className="w-full bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <header className="sticky top-0 z-50 bg-white border-b">
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/logo.png"
-            alt="The Slice X"
-            width={150}
-            height={50}
-            className="block"
+          <img
+            src="/logo.svg"
+            alt="Slice X"
+            className="h-8 w-auto"
           />
         </Link>
 
-        {/* Nav links */}
-        <nav className="hidden md:flex gap-8 text-gray-700 dark:text-gray-200 font-medium">
-          <Link href="/">Home</Link>
-          <Link href="/about">About</Link>
-          <Link href="/blog">Blog</Link>
-          <Link href="/contact">Contact</Link>
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+          <Link href="/blog" className="hover:text-blue-600">Blog</Link>
+          <Link href="/about" className="hover:text-blue-600">About</Link>
+          <Link href="/contact" className="hover:text-blue-600">Contact</Link>
+
+          <div className="ml-4 flex gap-4">
+            <button className="text-sm">Sign in</button>
+            <button className="px-4 py-2 rounded-full bg-black text-white text-sm">
+              Register
+            </button>
+          </div>
         </nav>
 
-        {/* Auth links */}
-        <div className="hidden md:flex gap-4">
-          <Link
-            href="/signin"
-            className="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400"
-          >
-            Sign In
-          </Link>
-          <Link
-            href="/register"
-            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Register
-          </Link>
-        </div>
-
-        {/* Mobile menu button */}
-        <div className="md:hidden">
-          {/* You can add a mobile menu icon here if needed */}
-        </div>
+        {/* Mobile Hamburger */}
+        <button
+          onClick={() => setOpen(!open)}
+          className="md:hidden"
+          aria-label="Toggle menu"
+        >
+          {open ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
+
+      {/* Mobile Menu */}
+      {open && (
+        <div className="md:hidden border-t bg-white">
+          <div className="flex flex-col px-6 py-4 gap-4 text-sm">
+            <Link href="/blog" onClick={() => setOpen(false)}>Blog</Link>
+            <Link href="/about" onClick={() => setOpen(false)}>About</Link>
+            <Link href="/contact" onClick={() => setOpen(false)}>Contact</Link>
+
+            <hr />
+
+            <Link href="/signin" onClick={() => setOpen(false)}>Sign in</Link>
+            <Link
+              href="/register"
+              onClick={() => setOpen(false)}
+              className="inline-flex justify-center rounded-full bg-black text-white py-2"
+            >
+              Register
+            </Link>
+          </div>
+        </div>
+      )}
     </header>
   )
 }

@@ -108,17 +108,6 @@ export default function HomePage() {
 
   return (
     <main className="max-w-7xl mx-auto p-6">
-      {/* Hero */}
-      <div className="mb-8 text-center">
-        <Link href="/">
-          <h1 className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-400 mb-2 hover:scale-105 transition">
-            The Slice X
-          </h1>
-        </Link>
-        <p className="text-gray-700 text-xl font-medium">
-          Trusted properties you can rely on
-        </p>
-      </div>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6 items-center">
