@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "The Slice X",
   description: "Trusted land marketplace",
+   icons: {
+    icon: "/favicon.png",
+  },
 }
 
 export default function RootLayout({
