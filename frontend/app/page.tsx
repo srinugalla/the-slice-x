@@ -99,58 +99,61 @@ export default function HomePage() {
   return (
     <main className="max-w-7xl mx-auto p-6">
 
-      {/* ---------------- Ultimate Premium Search Bar ---------------- */}
-      <div className="w-full flex justify-center py-12 bg-gradient-to-r from-blue-50 via-white to-blue-50 rounded-3xl shadow-md">
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-5xl p-6 bg-white rounded-3xl shadow-xl transition-all duration-300 hover:shadow-2xl">
-          
-          {/* Village Input with Icon */}
-          <div className="relative flex-1">
-            <FiSearch className="absolute top-1/2 left-5 -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Search by village"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-14 pr-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black placeholder-black"
-            />
-          </div>
 
-          {/* State Select */}
+      {/* ---------------- Hero + Search Section ---------------- */}
+      <div className="mb-10 text-center">
+        {/* Hero Headline */}
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-black">
+          Buy, Sell, and Discover Land throughout India
+        </h1>
+
+        {/* Subtext */}
+        <p className="mt-4 text-gray-700 text-lg sm:text-xl max-w-2xl mx-auto">
+          From verified plots to trusted properties, find the best deals across the country.
+        </p>
+
+        {/* Search Area */}
+        <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <input
+            type="text"
+            placeholder="Search by village"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-4 py-3 rounded-lg border w-full sm:w-64 text-black placeholder-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          />
+
           <select
             value={selectedState}
-            onChange={e => { setSelectedState(e.target.value); setSelectedDistrict(''); setSelectedMandal('') }}
-            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black"
+            onChange={(e) => { setSelectedState(e.target.value); setSelectedDistrict(''); setSelectedMandal(''); }}
+            className="px-4 py-3 rounded-lg border text-black focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           >
             <option value="">All States</option>
-            {states.map(s => <option key={s}>{s}</option>)}
+            {states.map((s) => <option key={s}>{s}</option>)}
           </select>
 
-          {/* District Select */}
           <select
             value={selectedDistrict}
-            onChange={e => { setSelectedDistrict(e.target.value); setSelectedMandal('') }}
+            onChange={(e) => { setSelectedDistrict(e.target.value); setSelectedMandal(''); }}
             disabled={!selectedState}
-            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black"
+            className="px-4 py-3 rounded-lg border text-black disabled:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           >
             <option value="">All Districts</option>
-            {districts.map(d => <option key={d}>{d}</option>)}
+            {districts.map((d) => <option key={d}>{d}</option>)}
           </select>
 
-          {/* Mandal Select */}
           <select
             value={selectedMandal}
-            onChange={e => setSelectedMandal(e.target.value)}
+            onChange={(e) => setSelectedMandal(e.target.value)}
             disabled={!selectedDistrict}
-            className="flex-1 px-5 py-4 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md transition transform hover:scale-[1.01] text-black"
+            className="px-4 py-3 rounded-lg border text-black disabled:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           >
             <option value="">All Mandals</option>
-            {mandals.map(m => <option key={m}>{m}</option>)}
+            {mandals.map((m) => <option key={m}>{m}</option>)}
           </select>
 
-          {/* Search Button */}
           <button
-            onClick={handleSearch}
-            className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 hover:scale-105 transition transform shadow-lg flex items-center justify-center gap-2"
+            onClick={applyFilters}
+            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-teal-400 text-white rounded-lg flex items-center gap-2 hover:scale-105 transition-transform"
           >
             <FiPhone /> Search
           </button>
