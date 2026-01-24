@@ -168,38 +168,28 @@ export default function HomePage() {
       {/* Wheel-like Pagination */}
       {totalPages > 1 && (
         <div className="w-full flex justify-center py-4">
+          {/* Container: fixed width viewport showing 5 pages at a time */}
           <div className="relative w-80 overflow-x-auto scroll-smooth">
-            <div className="flex gap-4">
-              {(() => {
-                const visibleCount = 5
-                let startPage = Math.max(1, currentPage - 2)
-                let endPage = Math.min(totalPages, startPage + visibleCount - 1)
-
-                // Adjust start if near the end
-                if (endPage - startPage + 1 < visibleCount) {
-                  startPage = Math.max(1, endPage - visibleCount + 1)
-                }
-
-                return Array.from({ length: endPage - startPage + 1 }, (_, i) => {
-                  const page = startPage + i
-                  const isCurrent = page === currentPage
-                  return (
-                    <div
-                      key={page}
-                      onClick={() => goToPage(page)}
-                      className={`
-                        w-16 h-16 flex items-center justify-center rounded-full border flex-shrink-0 cursor-pointer
-                        transition-transform duration-300
-                        ${isCurrent ? 'bg-blue-600 text-white scale-125 font-bold' : 'bg-white text-black'}
-                      `}
-                    >
-                      {page}
-                    </div>
-                  )
-                })
-              })()}
+            <div className="flex gap-4 px-2">
+              {Array.from({ length: totalPages }, (_, i) => {
+                const page = i + 1
+                const isCurrent = page === currentPage
+                return (
+                  <div
+                    key={page}
+                    onClick={() => goToPage(page)}
+                    className={`
+                      flex-shrink-0 w-14 h-14 flex items-center justify-center rounded-full border cursor-pointer
+                      transition-transform duration-300
+                      ${isCurrent ? 'bg-blue-600 text-white scale-125 font-bold' : 'bg-white text-black'}
+                    `}
+                  >
+                    {page}
+                  </div>
+                )
+              })}
             </div>
-            {/* Optional center indicator */}
+            {/* Center indicator line */}
             <div className="absolute left-1/2 top-0 -translate-x-1/2 h-full w-0.5 bg-blue-400 pointer-events-none"></div>
           </div>
         </div>
