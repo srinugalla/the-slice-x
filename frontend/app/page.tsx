@@ -51,7 +51,7 @@ export default function HomePage() {
 
   /* Pagination */
   const [currentPage, setCurrentPage] = useState(1)
-  const listingsPerPage = 30
+  const listingsPerPage = 15
 
   /* Modal */
   const [selectedLand, setSelectedLand] = useState<LandListing | null>(null)
