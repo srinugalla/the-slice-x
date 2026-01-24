@@ -99,17 +99,19 @@ export default function HomePage() {
   return (
     <main className="max-w-7xl mx-auto p-6">
 
+
       {/* ---------------- Hero + Search Section ---------------- */}
       <div className="mb-10 text-center px-4 sm:px-0">
         {/* Hero Headline */}
-        <h1 className="text-5xl sm:text-6xl font-extrabold text-black leading-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-snug text-gray-900 dark:text-white">
           Buy, Sell, and Discover Land throughout India
         </h1>
 
         {/* Subtext */}
-        <p className="mt-4 text-gray-700 text-lg sm:text-xl max-w-2xl mx-auto">
+        <p className="mt-4 text-base sm:text-lg md:text-xl max-w-2xl mx-auto text-gray-700 dark:text-gray-300">
           From verified plots to trusted properties, find the best deals across the country.
         </p>
+
 
         {/* Premium Search Area */}
         <div className="mt-10 flex justify-center">
