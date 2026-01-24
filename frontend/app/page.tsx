@@ -165,23 +165,38 @@ export default function HomePage() {
         })}
       </div>
       
-      {/* Infinite Scroll Pagination */}
+      {/* Infinite Wheel Pagination */}
       {totalPages > 1 && (
         <div className="relative mt-8">
-          <div className="flex items-center justify-center overflow-x-auto scrollbar-hide py-2 space-x-2 snap-x snap-mandatory">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <div
-                key={p}
-                onClick={() => goToPage(p)}
-                className={`flex-none w-12 h-12 flex items-center justify-center rounded-full border cursor-pointer snap-center ${
-                  p === currentPage ? 'bg-blue-600 text-white' : 'bg-white text-black'
-                }`}
-              >
-                {p}
-              </div>
-            ))}
+          <div
+            className="flex items-center justify-center overflow-x-auto scrollbar-hide py-2 space-x-2 snap-x snap-mandatory"
+            style={{ scrollSnapType: 'x mandatory' }}
+          >
+            {(() => {
+              const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
+              // clone first 2 and last 2 pages to simulate infinite loop
+              const displayPages = [
+                pages[totalPages - 2],
+                pages[totalPages - 1],
+                ...pages,
+                pages[0],
+                pages[1],
+              ]
+              return displayPages.map((p, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => goToPage(p)}
+                  className={`flex-none w-12 h-12 flex items-center justify-center rounded-full border cursor-pointer snap-center ${
+                    p === currentPage ? 'bg-blue-600 text-white font-bold' : 'bg-white text-black'
+                  }`}
+                >
+                  {p}
+                </div>
+              ))
+            })()}
           </div>
-          {/* Optional: left/right gradient fades */}
+
+          {/* Left/Right gradient fades */}
           <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-black/50 pointer-events-none"></div>
           <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-black/50 pointer-events-none"></div>
         </div>
