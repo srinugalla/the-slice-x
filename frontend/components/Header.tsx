@@ -14,7 +14,7 @@ export default function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <img
-            src="/logo.svg"
+            src="/logo.png"
             alt="Slice X"
             className="h-8 w-auto"
           />
