@@ -166,34 +166,29 @@ export default function HomePage() {
       </div>
       
 
-      {/* Infinite Wheel Pagination */}
+      
+      {/* Infinite Scroll Pagination */}
       {totalPages > 1 && (
-        <div className="relative w-full overflow-x-hidden flex justify-center items-center mt-8">
-          <div
-            className="flex gap-4 transition-transform duration-300"
-            style={{
-              transform: `translateX(-${(currentPage - 3) * 64}px)`, // 64px per page button width
-            }}
-          >
-            {Array.from({ length: totalPages * 3 }, (_, i) => {
-              // replicate pages 3 times to allow infinite looping
-              const page = (i % totalPages) + 1
-              const isCurrent = page === currentPage
-              return (
-                <div
-                  key={i}
-                  onClick={() => goToPage(page)}
-                  className={`w-12 h-12 flex items-center justify-center rounded-full border cursor-pointer flex-shrink-0 transition-all ${
-                    isCurrent ? 'bg-blue-600 text-white font-bold scale-110' : 'bg-white text-black'
-                  }`}
-                >
-                  {page}
-                </div>
-              )
-            })}
+        <div className="relative mt-8">
+          <div className="flex items-center justify-center overflow-x-auto scrollbar-hide py-2 space-x-2 snap-x snap-mandatory">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <div
+                key={p}
+                onClick={() => goToPage(p)}
+                className={`flex-none w-12 h-12 flex items-center justify-center rounded-full border cursor-pointer snap-center ${
+                  p === currentPage ? 'bg-blue-600 text-white' : 'bg-white text-black'
+                }`}
+              >
+                {p}
+              </div>
+            ))}
           </div>
+          {/* Optional: left/right gradient fades */}
+          <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-black/50 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-black/50 pointer-events-none"></div>
         </div>
       )}
+
 
 
       {/* Modal */}
