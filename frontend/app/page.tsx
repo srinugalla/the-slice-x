@@ -166,16 +166,16 @@ export default function HomePage() {
       </div>
       
 
-      {/* Wheel-like Pagination (5 pages visible) */}
+      {/* Wheel-like Pagination (5 pages visible, smooth scroll) */}
       {totalPages > 1 && (
-        <div className="w-full overflow-x-auto flex justify-center mt-8 py-2">
+        <div className="w-full overflow-x-auto scroll-smooth py-4">
           <div className="flex gap-4 px-4 snap-x snap-mandatory">
             {(() => {
               const visibleCount = 5
               let startPage = Math.max(1, currentPage - 2)
               let endPage = Math.min(totalPages, startPage + visibleCount - 1)
 
-              // Adjust start if we're near the end
+              // Adjust start if near the end
               if (endPage - startPage + 1 < visibleCount) {
                 startPage = Math.max(1, endPage - visibleCount + 1)
               }
@@ -201,6 +201,7 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
 
       {/* Modal */}
       {selectedLand && (
