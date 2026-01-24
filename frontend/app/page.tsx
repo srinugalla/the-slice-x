@@ -53,7 +53,23 @@ export default function HomePage() {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const { data, error } = await supabase.from('land_listings').select('*')
+        const { data, error } = await supabase.from('land_listings').select(`
+    land_id,
+    state,
+    district,
+    mandal,
+    village,
+    total_price,
+    price_per_acer,
+    area,
+    area_unit,
+    seller_name,
+    phone,
+    seller_type,
+    owner_name,
+    owner_number,
+    image_urls
+  `)
         if (error) throw error
         setListings(data ?? [])
         setFilteredListings(data ?? [])
@@ -176,9 +192,8 @@ export default function HomePage() {
 
       {/* ---------------- Latest Listings Header ---------------- */}
       <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-black px-4 sm:px-0">Latest Listings</h2>
-
       {/* ---------------- Listings Grid ---------------- */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-6">
         {currentListings.map((land) => (
           <ListingCard
             key={land.land_id}
