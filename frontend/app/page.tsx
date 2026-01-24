@@ -167,21 +167,22 @@ export default function HomePage() {
       
       {/* Infinite Wheel Pagination - 5 visible pages */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-8 items-center gap-2">
+        <div className="flex justify-center mt-8 items-center gap-2 overflow-x-hidden">
           {(() => {
             const visibleCount = 5
-            const half = Math.floor(visibleCount / 2)
-
-            // Calculate 5 pages around current page
             const pages: number[] = []
-            for (let i = -half; i <= half; i++) {
-              let page = ((currentPage - 1 + i + totalPages) % totalPages) + 1
+
+            // Calculate start index for 5-page window
+            let start = currentPage - 3
+            if (start < 1) start = totalPages + start // loop back
+            for (let i = 0; i < visibleCount; i++) {
+              const page = ((start + i - 1) % totalPages) + 1
               pages.push(page)
             }
 
-            return pages.map(p => (
+            return pages.map((p, idx) => (
               <div
-                key={p}
+                key={idx}
                 onClick={() => goToPage(p)}
                 className={`w-12 h-12 flex items-center justify-center rounded-full border cursor-pointer transition-all ${
                   p === currentPage ? 'bg-blue-600 text-white font-bold scale-110' : 'bg-white text-black'
