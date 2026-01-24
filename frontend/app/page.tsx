@@ -165,13 +165,12 @@ export default function HomePage() {
         })}
       </div>
       
-
       {/* Wheel-like Pagination */}
       {totalPages > 1 && (
         <div className="w-full flex justify-center py-4">
           {/* Container: fixed width viewport showing 5 pages */}
-          <div className="relative w-80 overflow-x-auto scroll-smooth whitespace-nowrap scrollbar-none">
-            <div className="flex gap-4">
+          <div className="relative w-80 overflow-x-auto overflow-y-hidden scroll-smooth whitespace-nowrap flex items-center scrollbar-none">
+            <div className="flex gap-4 items-center">
               {Array.from({ length: totalPages }, (_, i) => {
                 const page = i + 1
                 const isCurrent = page === currentPage
@@ -182,7 +181,9 @@ export default function HomePage() {
                     className={`
                       inline-flex items-center justify-center w-14 h-14 rounded-full cursor-pointer flex-shrink-0
                       transition-transform duration-300
-                      ${isCurrent ? 'bg-blue-600 text-white scale-125 font-bold border-blue-600' : 'bg-white text-black border border-gray-300'}
+                      ${isCurrent
+                        ? 'bg-blue-600 text-white scale-125 font-bold' // no border here
+                        : 'bg-white text-black border border-gray-300'}
                     `}
                   >
                     {page}
