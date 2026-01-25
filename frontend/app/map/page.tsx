@@ -5,7 +5,8 @@ import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { supabase } from '@/lib/supabaseClient'
 
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN ||'pk.eyJ1IjoidGhlc2xpY2V4IiwiYSI6ImNta3QxampxNjB0MzgzZ3M0bHBxaWp2aHcifQ.wVQ64fUFZO-n0xp-HQPPcQ'
+// ⚡ For quick testing, you can provide the token directly here if env is not working
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || 'pk.eyJ1IjoidGhlc2xpY2V4IiwiYSI6ImNta3Q4MWUyZDFlM3ozZHM2a29naHNrb3gifQ.TwRy8UoVCZsm_uGhJrlsFw'
 
 interface LandListing {
   land_id: number
@@ -20,35 +21,19 @@ interface LandListing {
   longitude: number
 }
 
-// Reuse your ListingCard price formatting
-function formatPrice(price?: number): string {
-  if (!price || price <= 0) return 'N/A'
-  if (price >= 100) return `${(price / 100).toFixed(2)} Cr`
-  return `${price} Lakhs`
-}
-
 export default function MapPage() {
   const mapContainer = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const [listings, setListings] = useState<LandListing[]>([])
   const [loading, setLoading] = useState(true)
-  const [isDark, setIsDark] = useState(false)
 
-  // Detect dark mode
-  useEffect(() => {
-    const darkModeObserver = new MutationObserver(() => {
-      setIsDark(document.documentElement.classList.contains('dark'))
-    })
-    darkModeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-    setIsDark(document.documentElement.classList.contains('dark'))
-    return () => darkModeObserver.disconnect()
-  }, [])
-
-  // Fetch listings
+  // Fetch listings from Supabase
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const { data, error } = await supabase.from('land_listings').select('*')
+        const { data, error } = await supabase
+          .from('land_listings')
+          .select('land_id,village,mandal,state,district,total_price,area,area_unit,latitude,longitude')
         if (error) throw error
         setListings(data ?? [])
       } catch (err) {
@@ -67,47 +52,55 @@ export default function MapPage() {
     mapRef.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v12',
-      center: [78.9629, 20.5937],
+      center: [78.9629, 20.5937], // Center India
       zoom: 4
     })
 
     mapRef.current.addControl(new mapboxgl.NavigationControl())
   }, [])
 
-  // Add markers with formatted prices
+  // Add markers to map
   useEffect(() => {
     if (!mapRef.current || listings.length === 0) return
+
+    // Clear existing markers
+    const existingMarkers = document.querySelectorAll('.mapboxgl-marker')
+    existingMarkers.forEach(marker => marker.remove())
 
     listings.forEach(land => {
       if (!land.latitude || !land.longitude) return
 
-      const popupHTML = `
-        <div style="
-          font-size: 14px;
-          font-weight: 600;
-          color: ${isDark ? '#F3F4F6' : '#111827'};
-          line-height: 1.4;
-        ">
+      const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`
+        <div class="text-sm font-semibold">
           <p>${land.village}, ${land.mandal}</p>
-          <p>Price: ₹${formatPrice(land.total_price)}</p>
+          <p>Price: ₹${land.total_price.toLocaleString()}</p>
           <p>Area: ${land.area} ${land.area_unit}</p>
         </div>
-      `
+      `)
 
       new mapboxgl.Marker({ color: '#1D4ED8' })
         .setLngLat([land.longitude, land.latitude])
-        .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popupHTML))
+        .setPopup(popup)
         .addTo(mapRef.current!)
     })
-  }, [listings, isDark])
+  }, [listings])
 
-  if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
-    return <div className="p-6 text-red-600">Error: Mapbox token not found. Please check your .env.local file.</div>
+  // Fallback if token is missing
+  if (!mapboxgl.accessToken) {
+    return (
+      <div className="p-6 text-red-600">
+        Error: Mapbox token not found. Please check your .env.local file.
+      </div>
+    )
   }
 
   return (
-    <main className="h-screen w-full">
-      {loading && <p className="p-6 text-gray-600">Loading map data…</p>}
+    <main className="h-screen w-full relative">
+      {loading && (
+        <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-white/80 z-10">
+          <p className="text-gray-600 text-lg font-medium">Loading map data…</p>
+        </div>
+      )}
       <div ref={mapContainer} className="h-full w-full" />
     </main>
   )
