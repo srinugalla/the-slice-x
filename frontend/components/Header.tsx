@@ -27,7 +27,7 @@ export default function Header() {
                 {/* replace with your svg/png in public */}
                 <Image src="/logo.png" alt="SliceX" fill className="object-contain" />
               </div>
-              <span className="font-semibold text-lg text-black dark:text-white">SliceX</span>
+              
             </Link>
           </div>
 
