@@ -13,7 +13,7 @@ export default function Header() {
     { name: "Blog", href: "/blog" },
     { name: "Contact", href: "/contact" },
     { name: "Register", href: "/register" },
-    { name: "Signin", href: "/signin" },
+    { name: "Sign in", href: "/signin" },
   ]
 
   return (
