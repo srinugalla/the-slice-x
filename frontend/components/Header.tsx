@@ -3,9 +3,13 @@
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
+import { useState } from "react"
+import { HiMenu, HiX } from "react-icons/hi"
 
 export default function Header() {
   const pathname = usePathname()
+  const [mobileOpen, setMobileOpen] = useState(false)
+
   const navItems = [
     { name: "Home", href: "/" },
     { name: "Map", href: "/map" },
@@ -31,7 +35,7 @@ export default function Header() {
           />
         </Link>
 
-        {/* Navigation */}
+        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8 font-semibold text-gray-800 dark:text-gray-100">
           {navItems.map((item) => (
             <Link
@@ -48,6 +52,36 @@ export default function Header() {
               {pathname === item.href && (
                 <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-full" />
               )}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Mobile Burger */}
+        <button
+          className="md:hidden text-gray-800 dark:text-gray-100 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          {mobileOpen ? <HiX size={28} /> : <HiMenu size={28} />}
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      <div
+        className={`md:hidden bg-white dark:bg-gray-900 overflow-hidden transition-all duration-300 ${
+          mobileOpen ? 'max-h-96 py-4' : 'max-h-0'
+        }`}
+      >
+        <nav className="flex flex-col px-6 gap-4 font-semibold text-gray-800 dark:text-gray-100">
+          {navItems.map((item) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              onClick={() => setMobileOpen(false)}
+              className={`hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 ${
+                pathname === item.href ? 'text-blue-600 dark:text-blue-400 font-bold' : ''
+              }`}
+            >
+              {item.name}
             </Link>
           ))}
         </nav>
