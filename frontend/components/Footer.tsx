@@ -20,12 +20,12 @@ export default function Footer() {
           <Image
             src="/logo.png"
             alt="SliceX"
-            width={40}
-            height={40}
-            className="object-contain"
+            width={140}
+            height={48}
+            className="h-12 md:h-14 w-auto transition-transform duration-300 hover:scale-110 filter drop-shadow-md hover:drop-shadow-lg"
           />
           <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
-            Trusted land marketplace — find your dream property easily and securely.
+            India's largest Verified land marketplace .
           </p>
         </div>
 
