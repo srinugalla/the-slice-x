@@ -25,7 +25,24 @@ export default function Header() {
             <Link href="/" className="flex items-center gap-2">
               <div className="w-10 h-10 relative">
                 {/* replace with your svg/png in public */}
-                <Image src="/logo.png" alt="SliceX" width={120} height={40} priority className="h-10 md:h-12 w-auto transition-transform duration-200 hover:scale-105" />
+                <Image
+                  src="/logo.png"
+                  alt="SliceX"
+                  width={140}             // slightly larger for better visibility
+                  height={48}             // maintain logo aspect ratio
+                  priority
+                  className="
+                    h-12 md:h-14 w-auto
+                    transition-transform duration-300
+                    hover:scale-110
+                    hover:brightness-110
+                    dark:hover:brightness-125
+                    filter
+                    drop-shadow-md
+                    hover:drop-shadow-lg
+                  "
+                />
+
               </div>
               
             </Link>
