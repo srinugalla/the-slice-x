@@ -1,111 +1,57 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { FiMenu, FiX, FiMap } from 'react-icons/fi'
+import Link from "next/link"
+import Image from "next/image"
+import { usePathname } from "next/navigation"
 
 export default function Header() {
-  const [open, setOpen] = useState(false)
-
-  const links = [
-    { href: '/', label: 'Listings' },
-    { href: '/map', label: 'Map', icon: <FiMap className="inline-block -mt-[2px]" /> },
-    { href: '/blog', label: 'Blog' },
-    { href: '/about', label: 'About' },
-    { href: '/contact', label: 'Contact' },
+  const pathname = usePathname()
+  const navItems = [
+    { name: "Home", href: "/" },
+    { name: "Map", href: "/map" },
+    { name: "About", href: "/about" },
+    { name: "Blog", href: "/blog" },
+    { name: "Contact", href: "/contact" },
+    { name: "Register", href: "/register" },
+    { name: "Signin", href: "/signin" },
   ]
 
   return (
-    <header className="w-full bg-white dark:bg-gray-900/80 backdrop-blur-md z-50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 relative">
-                {/* replace with your svg/png in public */}
-                <Image
-                  src="/logo.png"
-                  alt="SliceX"
-                  width={140}             // slightly larger for better visibility
-                  height={48}             // maintain logo aspect ratio
-                  priority
-                  className="
-                    h-12 md:h-14 w-auto
-                    transition-transform duration-300
-                    hover:scale-110
-                    hover:brightness-110
-                    dark:hover:brightness-125
-                    filter
-                    drop-shadow-md
-                    hover:drop-shadow-lg
-                  "
-                />
+    <header className="w-full bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/">
+          <Image
+            src="/logo.png"
+            alt="SliceX"
+            width={140}
+            height={48}
+            priority
+            className="h-12 md:h-14 w-auto transition-transform duration-300 hover:scale-110 filter drop-shadow-md hover:drop-shadow-lg"
+          />
+        </Link>
 
-              </div>
-              
-            </Link>
-          </div>
-
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-6">
-            {links.map(l => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-black dark:hover:text-white flex items-center gap-2"
-              >
-                {l.icon && <span className="text-sky-600">{l.icon}</span>}
-                {l.label}
-              </Link>
-            ))}
-
-            {/* Sign in / Register placeholders */}
-            <div className="ml-4 flex items-center gap-3">
-              <Link href="/signin" className="text-sm text-gray-600 dark:text-gray-300 hover:underline">Sign in</Link>
-              <Link href="/register" className="text-sm bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700">Register</Link>
-            </div>
-          </nav>
-
-          {/* Mobile hamburger */}
-          <div className="md:hidden flex items-center">
-            <button
-              aria-label="Toggle menu"
-              onClick={() => setOpen(!open)}
-              className="p-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+        {/* Navigation */}
+        <nav className="hidden md:flex items-center gap-8 font-semibold text-gray-800 dark:text-gray-100">
+          {navItems.map((item) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`
+                relative
+                hover:text-blue-600 dark:hover:text-blue-400
+                transition-colors duration-200
+                ${pathname === item.href ? 'text-blue-600 dark:text-blue-400 font-bold' : ''}
+              `}
             >
-              {open ? <FiX size={20} /> : <FiMenu size={20} />}
-            </button>
-          </div>
-        </div>
+              {item.name}
+              {pathname === item.href && (
+                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-full" />
+              )}
+            </Link>
+          ))}
+        </nav>
       </div>
-
-      {/* Mobile menu */}
-      {open && (
-        <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
-          <div className="px-4 py-4 space-y-3">
-            {links.map(l => (
-              <Link
-                key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="block text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 px-3 py-2 rounded-md"
-              >
-                <div className="flex items-center gap-2">
-                  {l.icon && <span className="text-sky-600">{l.icon}</span>}
-                  {l.label}
-                </div>
-              </Link>
-            ))}
-
-            <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
-              <Link href="/signin" onClick={() => setOpen(false)} className="block text-base text-gray-600 dark:text-gray-300 py-2">Sign in</Link>
-              <Link href="/register" onClick={() => setOpen(false)} className="block text-base bg-blue-600 text-white px-4 py-2 rounded-md mt-2">Register</Link>
-            </div>
-          </div>
-        </div>
-      )}
     </header>
   )
 }
