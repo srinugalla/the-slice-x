@@ -1,40 +1,32 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import mapboxgl from 'mapbox-gl'
-import 'mapbox-gl/dist/mapbox-gl.css'
+import { useEffect, useRef } from "react";
+import mapboxgl from "mapbox-gl";
 
-mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN as string
+// Add your Mapbox token here
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 
 export default function MapPage() {
-  const mapContainerRef = useRef<HTMLDivElement | null>(null)
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const mapInstance = useRef<mapboxgl.Map | null>(null);
 
   useEffect(() => {
-    if (!mapContainerRef.current) return
+    if (mapContainer.current && !mapInstance.current) {
+      mapInstance.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: "mapbox://styles/mapbox/streets-v11",
+        center: [80.7, 16.5], // India center
+        zoom: 5,
+      });
 
-    const map = new mapboxgl.Map({
-      container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/light-v11',
-      center: [78.9629, 20.5937], // India center
-      zoom: 4.5
-    })
-
-    map.addControl(new mapboxgl.NavigationControl(), 'top-right')
-
-    return () => {
-      map.remove()
+      // Optional: add navigation controls
+      mapInstance.current.addControl(new mapboxgl.NavigationControl());
     }
-  }, [])
+  }, []);
 
   return (
-    <main className="h-screen w-full">
-      {/* Header */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-white px-6 py-3 rounded-full shadow-lg">
-        <h1 className="font-semibold text-black">Land Listings Map</h1>
-      </div>
-
-      {/* Map */}
-      <div ref={mapContainerRef} className="h-full w-full" />
-    </main>
-  )
+    <div className="w-full h-[80vh] rounded-xl shadow-lg">
+      <div ref={mapContainer} className="w-full h-full" />
+    </div>
+  );
 }
