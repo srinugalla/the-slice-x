@@ -6,6 +6,7 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import { supabase } from '@/lib/supabaseClient'
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
+console.log('Mapbox token:', process.env.NEXT_PUBLIC_MAPBOX_TOKEN)
 
 interface LandListing {
   land_id: number
