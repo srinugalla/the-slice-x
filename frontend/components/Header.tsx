@@ -25,7 +25,7 @@ export default function Header() {
             <Link href="/" className="flex items-center gap-2">
               <div className="w-10 h-10 relative">
                 {/* replace with your svg/png in public */}
-                <Image src="/logo.png" alt="SliceX" fill className="object-contain" />
+                <Image src="/logo.png" alt="SliceX" width={120} height={40} priority className="h-10 md:h-12 w-auto" />
               </div>
               
             </Link>
