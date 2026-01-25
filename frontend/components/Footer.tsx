@@ -26,18 +26,32 @@ export default function Footer() {
         {/* Contact & Social */}
         <div className="flex flex-col gap-4">
           <h4 className="text-lg font-semibold mb-2">Connect</h4>
-          <Link href="/contact" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact Us</Link>
-          
+
+          {/* Contact Info */}
+          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
+            Email: <a href="mailto:info@slicex.com" className="hover:text-blue-600 dark:hover:text-blue-400">info@slicex.com</a>
+          </p>
+          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
+            Phone: <a href="tel:+911234567890" className="hover:text-blue-600 dark:hover:text-blue-400">+91 12345 67890</a>
+          </p>
+
           {/* Social Icons */}
           <div className="flex gap-4 mt-2">
-            {[FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn].map((Icon, idx) => (
-              <Icon
-                key={idx}
-                className="w-5 h-5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition transform hover:scale-110"
-              />
-            ))}
+            <a href="#" target="_blank" rel="noopener noreferrer">
+              <FaFacebookF className="w-5 h-5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition transform hover:scale-110" />
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer">
+              <FaTwitter className="w-5 h-5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition transform hover:scale-110" />
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer">
+              <FaInstagram className="w-5 h-5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition transform hover:scale-110" />
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer">
+              <FaLinkedinIn className="w-5 h-5 cursor-pointer text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition transform hover:scale-110" />
+            </a>
           </div>
 
+          {/* Copyright */}
           <p className="text-xs md:text-sm mt-4 text-gray-500 dark:text-gray-400">
             © {new Date().getFullYear()} SliceX. All rights reserved.
           </p>
