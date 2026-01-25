@@ -6,6 +6,7 @@ import { FiPhone, FiSearch } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
 import ContactReveal from '@/components/ContactReveal'
 
+
 function formatPrice(priceInLakhs?: number): string {
   if (!priceInLakhs || priceInLakhs <= 0) return 'N/A'
   if (priceInLakhs >= 100) return `${(priceInLakhs / 100).toFixed(2)} Cr`
@@ -179,8 +180,13 @@ export default function HomePage() {
         </div>
       </div>
 
+
       {/* ---------------- Latest Listings Header ---------------- */}
-      <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-black px-4 sm:px-0">Latest Listings</h2>
+      <h2 className="text-2xl sm:text-3xl font-semibold mb-6 px-4 sm:px-0 
+                    text-gray-900 dark:text-gray-100 
+                    tracking-tight">
+        Latest Listings
+      </h2>
 
       {/* ---------------- Listings Grid ---------------- */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
