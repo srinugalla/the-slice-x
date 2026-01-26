@@ -1,58 +1,60 @@
 'use client'
 
-import Link from "next/link"
-import Image from "next/image"
-import { usePathname } from "next/navigation"
-import { useState, useRef, useEffect } from "react"
-import { HiMenu, HiX } from "react-icons/hi"
-import { supabase } from "@/lib/supabaseClient"
+import Link from 'next/link'
+import Image from 'next/image'
+import { usePathname } from 'next/navigation'
+import { useEffect, useState, useRef } from 'react'
+import { HiMenu, HiX } from 'react-icons/hi'
+import { supabase } from '@/lib/supabaseClient'
 
 export default function Header() {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [loginOpen, setLoginOpen] = useState(false)
-  const [email, setEmail] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [sent, setSent] = useState(false)
+  const [user, setUser] = useState<any | null>(null)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const navItems = [
-    { name: "Home", href: "/" },
-    { name: "Map", href: "/map" },
-    { name: "About", href: "/about" },
-    { name: "Blog", href: "/blog" },
-    { name: "Contact", href: "/contact" },
+    { name: 'Home', href: '/' },
+    { name: 'Map', href: '/map' },
+    { name: 'About', href: '/about' },
+    { name: 'Blog', href: '/blog' },
+    { name: 'Contact', href: '/contact' },
   ]
 
-  const user = supabase.auth.user() // currently logged-in user
+  // Get current logged-in user
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getUser()
+      setUser(data.user)
+    }
+
+    fetchUser()
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => {
+      listener.subscription.unsubscribe()
+    }
+  }, [])
 
   // Close dropdown if clicked outside
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setLoginOpen(false)
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const sendMagicLink = async () => {
-    if (!email) return
-    setLoading(true)
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: process.env.NEXT_PUBLIC_SITE_URL },
-    })
-    if (error) alert(error.message)
-    else setSent(true)
-    setLoading(false)
-  }
-
-  const signOut = async () => {
+  const handleSignOut = async () => {
     await supabase.auth.signOut()
-    setLoginOpen(false)
-    window.location.reload()
+    setUser(null)
+    setDropdownOpen(false)
   }
 
   return (
@@ -70,7 +72,7 @@ export default function Header() {
           />
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8 font-semibold text-gray-800 dark:text-gray-100">
           {navItems.map((item) => (
             <Link
@@ -78,76 +80,64 @@ export default function Header() {
               href={item.href}
               className={`
                 relative
-                hover:text-blue-600 dark:hover:text-blue-400
+                hover:text-orange-600 dark:hover:text-orange-400
                 transition-colors duration-200
-                ${pathname === item.href ? 'text-blue-600 dark:text-blue-400 font-bold' : ''}
+                ${pathname === item.href ? 'text-orange-600 dark:text-orange-400 font-bold' : ''}
               `}
             >
               {item.name}
               {pathname === item.href && (
-                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400 rounded-full" />
+                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-orange-600 dark:bg-orange-400 rounded-full" />
               )}
             </Link>
           ))}
-
-          {/* Login / User Button */}
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={() => setLoginOpen(!loginOpen)}
-              className="ml-4 rounded bg-orange-500 hover:bg-orange-600 px-4 py-2 text-white font-semibold transition"
-            >
-              {user ? user.email.split('@')[0] : 'Login'}
-            </button>
-
-            {/* Dropdown Panel */}
-            {loginOpen && !user && (
-              <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 z-50">
-                {sent ? (
-                  <p className="text-green-600 text-sm">Magic link sent! Check your email.</p>
-                ) : (
-                  <>
-                    <input
-                      type="email"
-                      placeholder="you@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="mb-3 w-full rounded border px-3 py-2 dark:bg-gray-700 dark:text-white"
-                    />
-                    <button
-                      onClick={sendMagicLink}
-                      disabled={loading}
-                      className="w-full rounded bg-orange-500 hover:bg-orange-600 py-2 text-white font-semibold disabled:opacity-50"
-                    >
-                      {loading ? 'Sending…' : 'Send Magic Link'}
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
-
-            {loginOpen && user && (
-              <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-2 z-50 flex flex-col gap-2">
-                <div className="text-gray-800 dark:text-gray-100 font-semibold">
-                  {user.email.split('@')[0]}
-                </div>
-                <button
-                  onClick={signOut}
-                  className="w-full text-left text-red-500 hover:bg-red-50 dark:hover:bg-red-900 px-2 py-1 rounded transition"
-                >
-                  Sign Out
-                </button>
-              </div>
-            )}
-          </div>
         </nav>
 
-        {/* Mobile Hamburger */}
-        <button
-          className="md:hidden text-gray-800 dark:text-gray-100 focus:outline-none"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
-          {mobileOpen ? <HiX size={28} /> : <HiMenu size={28} />}
-        </button>
+        {/* Auth / User */}
+        <div className="hidden md:flex relative items-center">
+          {user ? (
+            <div ref={dropdownRef} className="relative">
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+              >
+                <span className="text-sm font-semibold">
+                  {user.email ? user.email.split('@')[0] : 'User'}
+                </span>
+                <div className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs font-bold">
+                  {user.email?.charAt(0).toUpperCase() || 'U'}
+                </div>
+              </button>
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 shadow-md rounded-md py-1 z-50">
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="px-4 py-2 bg-orange-500 text-white rounded-md font-semibold hover:bg-orange-600 transition"
+            >
+              Login
+            </Link>
+          )}
+        </div>
+
+        {/* Mobile Burger */}
+        <div className="md:hidden flex items-center">
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="text-gray-800 dark:text-gray-100 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+          >
+            {mobileOpen ? <HiX size={28} /> : <HiMenu size={28} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
@@ -158,52 +148,39 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200`}
+                onClick={() => setMobileOpen(false)}
+                className={`hover:text-orange-600 dark:hover:text-orange-400 transition-colors duration-200 ${
+                  pathname === item.href ? 'text-orange-600 dark:text-orange-400 font-bold' : ''
+                }`}
               >
                 {item.name}
               </Link>
             ))}
-            {/* Mobile Login */}
-            <button
-              onClick={() => setLoginOpen(!loginOpen)}
-              className="w-full rounded bg-orange-500 hover:bg-orange-600 py-2 text-white font-semibold transition"
-            >
-              {user ? user.email.split('@')[0] : 'Login'}
-            </button>
-            {loginOpen && !user && (
-              <div className="mt-2 p-3 bg-white dark:bg-gray-800 border rounded shadow-lg flex flex-col gap-2">
-                {sent ? (
-                  <p className="text-green-600 text-sm">Magic link sent! Check your email.</p>
-                ) : (
-                  <>
-                    <input
-                      type="email"
-                      placeholder="you@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="mb-2 w-full rounded border px-3 py-2 dark:bg-gray-700 dark:text-white"
-                    />
-                    <button
-                      onClick={sendMagicLink}
-                      disabled={loading}
-                      className="w-full rounded bg-orange-500 hover:bg-orange-600 py-2 text-white font-semibold disabled:opacity-50"
-                    >
-                      {loading ? 'Sending…' : 'Send Magic Link'}
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
-            {loginOpen && user && (
-              <div className="mt-2 p-2 bg-white dark:bg-gray-800 border rounded shadow-lg flex flex-col gap-2">
-                <div className="text-gray-800 dark:text-gray-100 font-semibold">{user.email.split('@')[0]}</div>
+
+            {/* Mobile Auth */}
+            {user ? (
+              <div className="flex flex-col mt-2">
+                <span className="font-semibold mb-1">
+                  {user.email ? user.email.split('@')[0] : 'User'}
+                </span>
                 <button
-                  onClick={signOut}
-                  className="w-full text-left text-red-500 hover:bg-red-50 dark:hover:bg-red-900 px-2 py-1 rounded transition"
+                  onClick={() => {
+                    handleSignOut()
+                    setMobileOpen(false)
+                  }}
+                  className="px-4 py-2 bg-orange-500 text-white rounded-md font-semibold hover:bg-orange-600 transition"
                 >
                   Sign Out
                 </button>
               </div>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileOpen(false)}
+                className="px-4 py-2 bg-orange-500 text-white rounded-md font-semibold hover:bg-orange-600 transition mt-2"
+              >
+                Login
+              </Link>
             )}
           </div>
         </div>
