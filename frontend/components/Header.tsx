@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabaseClient"
 export default function Header() {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
 
   const navItems = [
@@ -20,27 +21,25 @@ export default function Header() {
     { name: "Contact", href: "/contact" },
   ]
 
+  // Load user on mount
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data } = await supabase.auth.getSession()
-      setUser(data.session?.user ?? null)
-    }
-
-    fetchUser()
+    const session = supabase.auth.getSession().then(res => {
+      if (res.data.session) setUser(res.data.session.user)
+    })
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      if (session) setUser(session.user)
+      else setUser(null)
     })
 
     return () => listener.subscription.unsubscribe()
   }, [])
 
   const getUserName = () => {
-    if (!user) return ''
-    if (user.user_metadata?.first_name) return user.user_metadata.first_name
-    if (user.email) return user.email.split('@')[0]
-    if (user.phone) return user.phone
-    return 'User'
+    if (!user) return ""
+    if (user.user_metadata?.full_name) return user.user_metadata.full_name
+    if (user.email) return user.email.split("@")[0]
+    return "User"
   }
 
   const handleSignOut = async () => {
@@ -83,25 +82,30 @@ export default function Header() {
             </Link>
           ))}
 
-          {/* Login / User */}
+          {/* User Section */}
           {user ? (
-            <div className="flex items-center gap-2 cursor-pointer group relative">
-              {/* Avatar */}
-              <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">
-                {getUserName().charAt(0).toUpperCase()}
+            <div className="relative">
+              <div
+                className="flex items-center gap-2 cursor-pointer select-none"
+                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+              >
+                <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">
+                  {getUserName().charAt(0).toUpperCase()}
+                </div>
+                <span className="font-semibold">{getUserName()}</span>
               </div>
-              <span className="font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                {getUserName()}
-              </span>
-              {/* Sign Out dropdown */}
-              <div className="absolute top-10 right-0 hidden group-hover:flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-md min-w-[120px]">
-                <button
-                  onClick={handleSignOut}
-                  className="px-4 py-2 text-left text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-                >
-                  Sign Out
-                </button>
-              </div>
+
+              {/* Dropdown */}
+              {userDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow-md z-50">
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full px-4 py-2 text-left text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <Link
@@ -132,35 +136,37 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
+                onClick={() => setMobileOpen(false)}
                 className={`hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 ${
                   pathname === item.href ? 'text-blue-600 dark:text-blue-400 font-bold' : ''
                 }`}
-                onClick={() => setMobileOpen(false)}
               >
                 {item.name}
               </Link>
             ))}
 
+            {/* Mobile User Section */}
             {user ? (
-              <>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">
-                    {getUserName().charAt(0).toUpperCase()}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm">
+                      {getUserName().charAt(0).toUpperCase()}
+                    </div>
+                    <span className="font-semibold">{getUserName()}</span>
                   </div>
-                  <span>{getUserName()}</span>
+                  <button
+                    onClick={handleSignOut}
+                    className="px-3 py-1 bg-red-500 text-white rounded text-sm"
+                  >
+                    Sign Out
+                  </button>
                 </div>
-                <button
-                  onClick={handleSignOut}
-                  className="w-full rounded border border-gray-800 dark:border-gray-100 py-2 mt-2 font-semibold text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-                >
-                  Sign Out
-                </button>
-              </>
+              </div>
             ) : (
               <Link
                 href="/login"
                 className="font-semibold hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-                onClick={() => setMobileOpen(false)}
               >
                 Login
               </Link>
