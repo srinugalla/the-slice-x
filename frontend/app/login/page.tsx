@@ -3,13 +3,13 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 
-export default function LoginPage() {
+export default function LoginModal() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [user, setUser] = useState<any>(null)
 
-  // Check if user is already logged in
+  // Fetch existing session on load
   useEffect(() => {
     const fetchUser = async () => {
       const { data } = await supabase.auth.getSession()
@@ -18,10 +18,12 @@ export default function LoginPage() {
 
     fetchUser()
 
-    // Listen to auth state changes
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-    })
+    // Listen for auth state changes (magic link return, signout, etc.)
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null)
+      }
+    )
 
     return () => {
       listener.subscription.unsubscribe()
@@ -50,11 +52,11 @@ export default function LoginPage() {
   const signOut = async () => {
     await supabase.auth.signOut()
     setUser(null)
-    setSent(false)
     setEmail('')
+    setSent(false)
   }
 
-  // Derive username from email if available
+  // Username derivation (future-proof)
   const getUserName = () => {
     if (!user) return ''
     if (user.user_metadata?.first_name) return user.user_metadata.first_name
@@ -64,16 +66,25 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-sm rounded-xl border p-6 shadow-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-md" />
+
+      {/* Modal Card */}
+      <div className="relative w-full max-w-sm rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-200 dark:border-gray-800">
         {!user ? (
           <>
-            <h1 className="mb-4 text-xl font-bold">Login to The Slice X</h1>
+            <h1 className="text-lg font-bold mb-1">
+              Sign in to SliceX
+            </h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-5">
+              Access your saved properties and preferences
+            </p>
 
             {sent ? (
-              <p className="text-sm text-green-600">
-                Magic link sent. Check your email.
-              </p>
+              <div className="rounded-lg bg-green-50 dark:bg-green-900/30 p-3 text-sm text-green-700 dark:text-green-300">
+                Magic link sent. Please check your email.
+              </div>
             ) : (
               <>
                 <input
@@ -81,13 +92,13 @@ export default function LoginPage() {
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mb-3 w-full rounded border px-3 py-2"
+                  className="mb-4 w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
 
                 <button
                   onClick={sendMagicLink}
                   disabled={loading || !email}
-                  className="w-full rounded bg-black py-2 text-white disabled:opacity-50"
+                  className="w-full rounded-lg bg-orange-500 py-2.5 text-sm font-semibold text-white hover:bg-orange-600 transition disabled:opacity-50"
                 >
                   {loading ? 'Sending…' : 'Send Magic Link'}
                 </button>
@@ -96,13 +107,16 @@ export default function LoginPage() {
           </>
         ) : (
           <>
-            <h1 className="mb-4 text-xl font-bold">Welcome, {getUserName()}!</h1>
-            <p className="mb-4 text-sm text-gray-700 dark:text-gray-300">
-              You are logged in successfully.
+            <h1 className="text-lg font-bold mb-1">
+              Welcome, {getUserName()} 👋
+            </h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-5">
+              You’re signed in successfully.
             </p>
+
             <button
               onClick={signOut}
-              className="w-full rounded border border-gray-800 dark:border-gray-100 py-2 font-semibold text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+              className="w-full rounded-lg border border-gray-300 dark:border-gray-700 py-2.5 text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition"
             >
               Sign Out
             </button>
@@ -112,4 +126,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
