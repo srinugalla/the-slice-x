@@ -3,8 +3,8 @@ import ComingSoon from '@/components/ComingSoon'
 export default function ContactPage() {
   return (
     <ComingSoon
-      title="We’re preparing the fields"
-      subtitle="Our contact experience is being carefully crafted."
+      title="Let’s connect soon"
+      subtitle="We’re setting up better ways to reach us."
     />
   )
 }
