@@ -213,34 +213,32 @@ export default function HomePage() {
         })}
       </div>
 
-      
-       {/* ---------------- Pagination ---------------- */}
+
+        {/* ---------------- Pagination ---------------- */}
       {totalPages > 1 && (
-        <div className="w-full flex justify-center py-6 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
-          <div className="flex gap-4 items-center">
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .slice(
-                Math.max(0, currentPage - 3),
-                Math.min(totalPages, currentPage + 2)
-              )
-              .map((page) => {
+        <div className="w-full flex justify-center py-6">
+          <div className="relative w-full max-w-3xl overflow-x-auto scroll-smooth scrollbar-none">
+            <div className="flex gap-4 items-center whitespace-nowrap px-4">
+              {Array.from({ length: totalPages }, (_, i) => {
+                const page = i + 1
                 const isCurrent = page === currentPage
                 return (
                   <div
                     key={page}
                     onClick={() => goToPage(page)}
                     className={`
-                      inline-flex items-center justify-center w-14 h-14 rounded-full cursor-pointer flex-shrink-0
+                      inline-flex items-center justify-center min-w-[48px] h-12 rounded-full cursor-pointer flex-shrink-0
                       transition-transform duration-300
                       ${isCurrent
                         ? 'bg-orange-500 text-white scale-125 font-bold shadow-lg'
-                        : 'bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600'}
+                        : 'bg-white text-black border border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700'}
                     `}
                   >
                     {page}
                   </div>
                 )
               })}
+            </div>
           </div>
         </div>
       )}
