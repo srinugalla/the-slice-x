@@ -17,7 +17,7 @@ export default function ContactReveal({ landId, ownerNumber }: ContactRevealProp
           onClick={() => setRevealed(true)}
           className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
         >
-          Reveal Contact
+          Contact Owner
         </button>
       ) : (
         <p className="text-gray-700">
