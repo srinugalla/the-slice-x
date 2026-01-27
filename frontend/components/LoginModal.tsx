@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 
 interface LoginModalProps {
-  onClose?: () => void
+  onClose: () => void
 }
 
 export default function LoginModal({ onClose }: LoginModalProps) {
@@ -12,43 +12,43 @@ export default function LoginModal({ onClose }: LoginModalProps) {
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [user, setUser] = useState<any>(null)
+  const modalRef = useRef<HTMLDivElement>(null)
 
-  // Fetch existing session on load
+  // Fetch session & listen to auth changes
   useEffect(() => {
     const fetchUser = async () => {
       const { data } = await supabase.auth.getSession()
       setUser(data.session?.user ?? null)
     }
-
     fetchUser()
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null)
-      }
-    )
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
 
-    return () => {
-      listener.subscription.unsubscribe()
-    }
+    return () => listener.subscription.unsubscribe()
   }, [])
+
+  // Close modal on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        onClose()
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [onClose])
 
   const sendMagicLink = async () => {
     setLoading(true)
-
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
-      },
+      options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback` },
     })
 
-    if (error) {
-      alert(error.message)
-    } else {
-      setSent(true)
-    }
-
+    if (error) alert(error.message)
+    else setSent(true)
     setLoading(false)
   }
 
@@ -57,7 +57,6 @@ export default function LoginModal({ onClose }: LoginModalProps) {
     setUser(null)
     setEmail('')
     setSent(false)
-    onClose?.()
   }
 
   const getUserName = () => {
@@ -68,20 +67,24 @@ export default function LoginModal({ onClose }: LoginModalProps) {
     return 'User'
   }
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (e.target === e.currentTarget) onClose?.()
-  }
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      onClick={handleBackdropClick}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-md" />
 
       {/* Modal Card */}
-      <div className="relative w-full max-w-sm rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-200 dark:border-gray-800 z-10">
+      <div
+        ref={modalRef}
+        className="relative w-full max-w-sm rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-200 dark:border-gray-800 z-10"
+      >
+        {/* Close X */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 text-lg font-bold"
+        >
+          ×
+        </button>
+
         {!user ? (
           <>
             <h1 className="text-lg font-bold mb-1">Sign in to SliceX</h1>
@@ -91,7 +94,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
 
             {sent ? (
               <div className="rounded-lg bg-green-50 dark:bg-green-900/30 p-3 text-sm text-green-700 dark:text-green-300">
-                Magic link sent. Please check your email.
+                Magic link sent. Check your email.
               </div>
             ) : (
               <>
@@ -102,6 +105,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
                   onChange={(e) => setEmail(e.target.value)}
                   className="mb-4 w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                 />
+
                 <button
                   onClick={sendMagicLink}
                   disabled={loading || !email}
@@ -118,6 +122,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-5">
               You’re signed in successfully.
             </p>
+
             <button
               onClick={signOut}
               className="w-full rounded-lg border border-gray-300 dark:border-gray-700 py-2.5 text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition"
