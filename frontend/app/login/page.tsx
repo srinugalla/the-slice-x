@@ -1,15 +1,20 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 
-export default function LoginModal() {
+interface LoginModalProps {
+  onClose: () => void
+}
+
+export default function LoginModal({ onClose }: LoginModalProps) {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [user, setUser] = useState<any>(null)
+  const modalRef = useRef<HTMLDivElement>(null)
 
-  // Fetch existing session on load
+  // Fetch existing session
   useEffect(() => {
     const fetchUser = async () => {
       const { data } = await supabase.auth.getSession()
@@ -18,34 +23,34 @@ export default function LoginModal() {
 
     fetchUser()
 
-    // Listen for auth state changes (magic link return, signout, etc.)
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null)
-      }
+      (_event, session) => setUser(session?.user ?? null)
     )
 
-    return () => {
-      listener.subscription.unsubscribe()
-    }
+    return () => listener.subscription.unsubscribe()
   }, [])
+
+  // Close modal if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onClose()
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [onClose])
 
   const sendMagicLink = async () => {
     setLoading(true)
-
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: process.env.NEXT_PUBLIC_SITE_URL,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
       },
     })
-
-    if (error) {
-      alert(error.message)
-    } else {
-      setSent(true)
-    }
-
+    if (error) alert(error.message)
+    else setSent(true)
     setLoading(false)
   }
 
@@ -56,7 +61,6 @@ export default function LoginModal() {
     setSent(false)
   }
 
-  // Username derivation (future-proof)
   const getUserName = () => {
     if (!user) return ''
     if (user.user_metadata?.first_name) return user.user_metadata.first_name
@@ -71,12 +75,13 @@ export default function LoginModal() {
       <div className="absolute inset-0 bg-black/40 backdrop-blur-md" />
 
       {/* Modal Card */}
-      <div className="relative w-full max-w-sm rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-200 dark:border-gray-800">
+      <div
+        ref={modalRef}
+        className="relative w-full max-w-xs rounded-2xl bg-white dark:bg-gray-900 p-6 shadow-2xl border border-gray-200 dark:border-gray-800"
+      >
         {!user ? (
           <>
-            <h1 className="text-lg font-bold mb-1">
-              Sign in to SliceX
-            </h1>
+            <h1 className="text-lg font-bold mb-1">Sign in to SliceX</h1>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-5">
               Access your saved properties and preferences
             </p>

@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState, useRef } from 'react'
 import { HiMenu, HiX } from 'react-icons/hi'
 import { supabase } from '@/lib/supabaseClient'
+import LoginModal from './LoginModal'
 
 export default function Header() {
   const pathname = usePathname()
@@ -13,6 +14,7 @@ export default function Header() {
   const [user, setUser] = useState<any | null>(null)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const [showLogin, setShowLogin] = useState(false)
 
   const navItems = [
     { name: 'Home', href: '/' },
@@ -22,11 +24,11 @@ export default function Header() {
     { name: 'Contact', href: '/contact' },
   ]
 
-  // Get current logged-in user
+  // Fetch logged-in user and listen for changes
   useEffect(() => {
     const fetchUser = async () => {
-      const { data } = await supabase.auth.getUser()
-      setUser(data.user)
+      const { data } = await supabase.auth.getSession()
+      setUser(data.session?.user ?? null)
     }
 
     fetchUser()
@@ -55,6 +57,14 @@ export default function Header() {
     await supabase.auth.signOut()
     setUser(null)
     setDropdownOpen(false)
+  }
+
+  const getUserName = () => {
+    if (!user) return ''
+    if (user.user_metadata?.first_name) return user.user_metadata.first_name
+    if (user.email) return user.email.split('@')[0]
+    if (user.phone) return user.phone
+    return 'User'
   }
 
   return (
@@ -101,11 +111,9 @@ export default function Header() {
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
               >
-                <span className="text-sm font-semibold">
-                  {user.email ? user.email.split('@')[0] : 'User'}
-                </span>
+                <span className="text-sm font-semibold">{getUserName()}</span>
                 <div className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs font-bold">
-                  {user.email?.charAt(0).toUpperCase() || 'U'}
+                  {getUserName().charAt(0).toUpperCase() || 'U'}
                 </div>
               </button>
               {dropdownOpen && (
@@ -120,12 +128,12 @@ export default function Header() {
               )}
             </div>
           ) : (
-            <Link
-              href="/login"
+            <button
+              onClick={() => setShowLogin(true)}
               className="px-4 py-2 bg-orange-500 text-white rounded-md font-semibold hover:bg-orange-600 transition"
             >
               Login
-            </Link>
+            </button>
           )}
         </div>
 
@@ -160,9 +168,7 @@ export default function Header() {
             {/* Mobile Auth */}
             {user ? (
               <div className="flex flex-col mt-2">
-                <span className="font-semibold mb-1">
-                  {user.email ? user.email.split('@')[0] : 'User'}
-                </span>
+                <span className="font-semibold mb-1">{getUserName()}</span>
                 <button
                   onClick={() => {
                     handleSignOut()
@@ -174,17 +180,22 @@ export default function Header() {
                 </button>
               </div>
             ) : (
-              <Link
-                href="/login"
-                onClick={() => setMobileOpen(false)}
+              <button
+                onClick={() => {
+                  setShowLogin(true)
+                  setMobileOpen(false)
+                }}
                 className="px-4 py-2 bg-orange-500 text-white rounded-md font-semibold hover:bg-orange-600 transition mt-2"
               >
                 Login
-              </Link>
+              </button>
             )}
           </div>
         </div>
       )}
+
+      {/* Login Modal */}
+      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
     </header>
   )
 }
