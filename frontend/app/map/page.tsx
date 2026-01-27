@@ -74,7 +74,7 @@ export default function MapPage() {
     mapRef.current.addControl(new mapboxgl.NavigationControl())
   }, [])
 
-  // Add markers to map
+  // Add markers with small popup
   useEffect(() => {
     if (!mapRef.current || listings.length === 0) return
 
@@ -85,35 +85,34 @@ export default function MapPage() {
     listings.forEach(land => {
       if (!land.latitude || !land.longitude) return
 
-      // Determine pin color by price per acre
+      // Determine pin color
       let pinColor = 'orange'
       if (land.price_per_acre && land.price_per_acre < 25) pinColor = 'green'
       else if (land.price_per_acre && land.price_per_acre < 50) pinColor = 'blue'
 
-      // Popup HTML (clicking marker opens modal instead)
-      const popupContent = `
-        <div class="text-sm font-semibold">
-          <p>${land.village}, ${land.mandal}</p>
-          <p>Price: ₹${formatPrice(land.total_price)}</p>
-          ${
-            land.price_per_acre
-              ? `<p>Price per Acre: ₹${formatPrice(land.price_per_acre)}</p>`
-              : ''
-          }
-          <p>Area: ${land.area} ${land.area_unit}</p>
-          <p style="margin-top:4px; font-style:italic; color:#1D4ED8;">Click for more details</p>
-        </div>
+      // Minimal popup HTML
+      const popupContent = document.createElement('div')
+      popupContent.className = 'text-sm font-semibold cursor-pointer'
+      popupContent.innerHTML = `
+        <p>${land.village}, ${land.mandal}</p>
+        <p>Price: ₹${formatPrice(land.total_price)}</p>
+        ${land.price_per_acre ? `<p>Price/Acre: ₹${formatPrice(land.price_per_acre)}</p>` : ''}
+        <p>Area: ${land.area} ${land.area_unit}</p>
+        <p style="margin-top:4px; font-style:italic; color:#1D4ED8;">Click for more details</p>
       `
-
-      const marker = new mapboxgl.Marker({ color: pinColor })
-        .setLngLat([land.longitude, land.latitude])
-        .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popupContent))
-        .addTo(mapRef.current!)
-
-      // Open modal on marker click
-      marker.getElement().addEventListener('click', () => {
+      // Click inside popup opens full modal
+      popupContent.addEventListener('click', e => {
+        e.stopPropagation()
         setSelectedLand(land)
       })
+
+      const popup = new mapboxgl.Popup({ offset: 25, closeButton: true, closeOnClick: true })
+        .setDOMContent(popupContent)
+
+      new mapboxgl.Marker({ color: pinColor })
+        .setLngLat([land.longitude, land.latitude])
+        .setPopup(popup)
+        .addTo(mapRef.current!)
     })
   }, [listings])
 
@@ -140,7 +139,7 @@ export default function MapPage() {
       )}
       <div ref={mapContainer} className="h-full w-full" />
 
-      {/* ---------------- Modal ---------------- */}
+      {/* Full Modal */}
       {selectedLand && (
         <div
           onClick={() => setSelectedLand(null)}
