@@ -41,7 +41,7 @@ export default function MapPage() {
   const [loading, setLoading] = useState(true)
   const [selectedLand, setSelectedLand] = useState<LandListing | null>(null)
 
-  // Fetch listings from Supabase
+  // Fetch listings
   useEffect(() => {
     const fetchListings = async () => {
       try {
@@ -62,7 +62,7 @@ export default function MapPage() {
     fetchListings()
   }, [])
 
-  // Initialize map
+  // Initialize Map
   useEffect(() => {
     if (!mapContainer.current || mapRef.current) return
     mapRef.current = new mapboxgl.Map({
@@ -74,33 +74,46 @@ export default function MapPage() {
     mapRef.current.addControl(new mapboxgl.NavigationControl())
   }, [])
 
-  // Add markers with small popup
+  // Add markers with premium pins
   useEffect(() => {
     if (!mapRef.current || listings.length === 0) return
 
     // Clear existing markers
-    const existingMarkers = document.querySelectorAll('.mapboxgl-marker')
-    existingMarkers.forEach(marker => marker.remove())
+    document.querySelectorAll('.mapboxgl-marker').forEach(marker => marker.remove())
 
     listings.forEach(land => {
       if (!land.latitude || !land.longitude) return
 
       // Determine pin color
-      let pinColor = 'orange'
-      if (land.price_per_acre && land.price_per_acre < 25) pinColor = 'green'
-      else if (land.price_per_acre && land.price_per_acre < 50) pinColor = 'blue'
+      let pinColor = '#F97316' // orange default
+      if (land.price_per_acre && land.price_per_acre < 25) pinColor = '#16A34A' // green
+      else if (land.price_per_acre && land.price_per_acre < 50) pinColor = '#2563EB' // blue
 
-      // Minimal popup HTML
-      const popupContent = document.createElement('div')
-      popupContent.className = 'text-sm font-semibold cursor-pointer'
-      popupContent.innerHTML = `
-        <p>${land.village}, ${land.mandal}</p>
-        <p>Price: ₹${formatPrice(land.total_price)}</p>
-        ${land.price_per_acre ? `<p>Price/Acre: ₹${formatPrice(land.price_per_acre)}</p>` : ''}
-        <p>Area: ${land.area} ${land.area_unit}</p>
-        <p style="margin-top:4px; font-style:italic; color:#1D4ED8;">Click for more details</p>
+      // Create premium SVG pin
+      const el = document.createElement('div')
+      el.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 drop-shadow-lg" viewBox="0 0 24 24" fill="${pinColor}">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+          <circle cx="12" cy="9" r="3" fill="white"/>
+        </svg>
       `
-      // Click inside popup opens full modal
+      el.style.cursor = 'pointer'
+
+      // Minimal popup content
+      const popupContent = document.createElement('div')
+      popupContent.className =
+        'bg-white text-black rounded-xl p-3 shadow-lg w-48 cursor-pointer hover:scale-105 transform transition'
+      popupContent.innerHTML = `
+        <h3 class="font-semibold text-md mb-1">${land.village}, ${land.mandal}</h3>
+        <p class="text-sm mb-1">Price: ₹${formatPrice(land.total_price)}</p>
+        ${
+          land.price_per_acre
+            ? `<p class="text-sm mb-1">Price/Acre: ₹${formatPrice(land.price_per_acre)}</p>`
+            : ''
+        }
+        <p class="text-sm">Area: ${land.area} ${land.area_unit}</p>
+        <p class="text-blue-600 text-xs mt-1">Click for more details</p>
+      `
       popupContent.addEventListener('click', e => {
         e.stopPropagation()
         setSelectedLand(land)
@@ -109,29 +122,19 @@ export default function MapPage() {
       const popup = new mapboxgl.Popup({ offset: 25, closeButton: true, closeOnClick: true })
         .setDOMContent(popupContent)
 
-      new mapboxgl.Marker({ color: pinColor })
-        .setLngLat([land.longitude, land.latitude])
-        .setPopup(popup)
-        .addTo(mapRef.current!)
+      new mapboxgl.Marker(el).setLngLat([land.longitude, land.latitude]).setPopup(popup).addTo(mapRef.current!)
     })
   }, [listings])
 
-  // Close modal on escape
+  // Close modal on Escape
   useEffect(() => {
     const esc = (e: KeyboardEvent) => e.key === 'Escape' && setSelectedLand(null)
     window.addEventListener('keydown', esc)
     return () => window.removeEventListener('keydown', esc)
   }, [])
 
-  if (!mapboxgl.accessToken)
-    return (
-      <div className="p-6 text-red-600">
-        Error: Mapbox token not found. Please check your .env.local file.
-      </div>
-    )
-
   return (
-    <main className="h-screen w-full relative">
+    <main className="h-screen w-full relative bg-gray-50 dark:bg-gray-900">
       {loading && (
         <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-white/80 z-10">
           <p className="text-gray-600 text-lg font-medium">Loading map data…</p>
@@ -143,13 +146,13 @@ export default function MapPage() {
       {selectedLand && (
         <div
           onClick={() => setSelectedLand(null)}
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
         >
           <div
             onClick={e => e.stopPropagation()}
-            className="bg-white text-black rounded-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-y-auto p-6 shadow-xl"
+            className="bg-white dark:bg-gray-800 text-black dark:text-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl transform transition duration-300 scale-100"
           >
-            <h2 className="text-2xl font-bold mb-4">
+            <h2 className="text-3xl font-bold mb-4 text-blue-600">
               {selectedLand.village}, {selectedLand.mandal}
             </h2>
             <div className="grid md:grid-cols-2 gap-6">
@@ -179,8 +182,8 @@ export default function MapPage() {
                 </p>
 
                 {(selectedLand.seller_name || selectedLand.phone || selectedLand.seller_type) && (
-                  <div className="pt-4 border-t">
-                    <h3 className="font-semibold mb-1">Seller Details</h3>
+                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <h3 className="font-semibold mb-2 text-lg">Seller Details</h3>
                     {selectedLand.seller_name && (
                       <p>
                         <span className="font-medium">Name:</span> {selectedLand.seller_name}
@@ -203,6 +206,8 @@ export default function MapPage() {
                   </div>
                 )}
               </div>
+
+              {/* Images */}
               <div className="grid grid-cols-2 gap-3">
                 {(() => {
                   const images: string[] = Array.isArray(selectedLand.image_urls)
@@ -215,7 +220,7 @@ export default function MapPage() {
                       key={i}
                       src={img}
                       alt={`${selectedLand.village} ${i + 1}`}
-                      className="h-32 object-cover rounded-xl"
+                      className="h-32 object-cover rounded-xl shadow-md"
                     />
                   ))
                 })()}
