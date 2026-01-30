@@ -2,14 +2,31 @@
 
 # The Slice X
 
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
-![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+---
 
 
-**The Slice X** is a premium online real estate marketplace for buying, selling, and exploring land properties. Designed to offer an elegant, user-friendly, and modern experience, it makes property discovery seamless and reliable.
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge\&logo=next.js\&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge\&logo=react\&logoColor=black)
+![Mapbox](https://img.shields.io/badge/Mapbox-000000?style=for-the-badge\&logo=mapbox\&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge\&logo=tailwind-css\&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge\&logo=supabase\&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge\&logo=vercel\&logoColor=white)
+
+
+## 🏡 The Slice X — Trusted LanDiscovery, Reimagined
+
+**The Slice X** is a premium, map-enabled land marketplace designed to help buyers discover, compare, and contact property owners with confidence.
+Built with a modern, mobile-first approach, it blends **list-based browsing** with a powerful **interactive map experience**.
+
+---
+
+## 🎡 Hero Preview — Enhanced Pagination Experience
+
+> A smooth, wheel-like pagination scroller designed for fast and delightful browsing.
+
+![Enhanced Pagination Hero](public/gifs/enhanced-pagination.gif)
+
+---
 
 ![The Slice X Logo](frontend/public/logo.png)
 
@@ -17,57 +34,83 @@
 
 ## 🌐 Website
 
-[Visit The Slice X](https://www.theslicex.com)
+👉 **Live:** [https://www.theslicex.com](https://www.theslicex.com)
 
 ---
 
-## 📌 Features
+## 📌 Core Features
 
-### 1. Elegant Property Search
-- Filter by **state, district, mandal, village**.
-- Real-time search with smooth, responsive UI.
-- Premium mobile-first design inspired by modern apps.
+### 1. Smart Property Search & Filters
 
-**Animated GIF Preview:**  
+* Filter by **state, district, mandal, village**
+* Keyword-based search across listings
+* Unified filters across **Home View** and **Map View**
+* Clean, fast, and responsive UI
+
+**Preview:**
 ![Search Animation](public/gifs/search-bar.gif)
 
 ---
 
-### 2. Property Listings
-- High-quality images with gallery view.
-- Display price in **Lakhs/Cr**.
-- Seller and owner contact details with optional reveal.
+### 2. Property Listings (Home View)
 
-**Animated GIF Preview:**  
+* High-quality land images
+* Price formatting in **₹ Lakhs / Crores**
+* Area and unit details clearly visible
+* One-click contact via **WhatsApp or phone**
+* Designed to build trust and clarity
+
+**Preview:**
 ![Listings Animation](public/gifs/listings.gif)
 
 ---
 
-### 3. Wheel-like Pagination
-- Smooth horizontal scroll with **center-highlight effect**.
-- Interactive and visually appealing.
+### 3. 🗺️ Interactive Map View (Mapbox)
 
-**Animated GIF Preview:**  
-![Wheel Pagination Animation](public/gifs/wheel-pagination.gif)
+* Discover properties visually using Mapbox
+* Click map markers to view land details
+* Seamless navigation between **Map View** and **Listings View**
+* Uses the same filters and search logic for consistency
+* Ideal for location-first property exploration
+
+**Preview:**
+![Map View Animation](public/gifs/map-view.gif)
 
 ---
 
-### 4. Mobile Responsive View
-- Fully optimized for small screens.
-- Clean, readable fonts and intuitive layout.
+### 4. Advanced Pagination System
 
-**Animated GIF Preview:**  
+* Smooth horizontal, wheel-style pagination
+* Center-focused active page indicator
+* Optimized for large datasets
+* Shared pagination logic across views
+
+*(Featured above as the hero animation)*
+
+---
+
+### 5. Mobile-First & Responsive Design
+
+* Fully optimized for mobile and tablets
+* Touch-friendly interactions
+* Clean typography with balanced contrast
+* Fast load times and smooth animations
+
+**Preview:**
 ![Mobile View Animation](public/gifs/mobile-view.gif)
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Frontend:** Next.js 13, React 18  
-- **Styling:** TailwindCSS  
-- **Icons:** React Icons, Lucide-React  
-- **Backend:** Supabase  
-- **Deployment:** Vercel  
+| Layer      | Technology                        |
+| ---------- | --------------------------------- |
+| Frontend   | Next.js 13 (App Router), React 18 |
+| Styling    | Tailwind CSS                      |
+| Icons      | React Icons, Lucide React         |
+| Backend    | Supabase (DB, Auth, Storage)      |
+| Maps       | **Mapbox GL JS**                  |
+| Deployment | Vercel                            |
 
 ---
 
@@ -76,12 +119,17 @@
 ```text
 frontend/
 ├─ app/
-│  ├─ page.tsx
+│  ├─ page.tsx              # Home listings
+│  ├─ map-view/
+│  │  └─ page.tsx           # Mapbox-powered map view
 │  ├─ layout.tsx
 │  └─ globals.css
 ├─ components/
 │  ├─ Header.tsx
 │  ├─ Footer.tsx
+│  ├─ Filters.tsx
+│  ├─ PaginationScroller.tsx
+│  ├─ MapView.tsx
 │  └─ ContactReveal.tsx
 ├─ lib/
 │  └─ supabaseClient.ts
@@ -89,45 +137,40 @@ frontend/
 │  ├─ logo.png
 │  ├─ favicon.png
 │  ├─ gifs/
+│  │  ├─ enhanced-pagination.gif
 │  │  ├─ search-bar.gif
 │  │  ├─ listings.gif
-│  │  ├─ wheel-pagination.gif
+│  │  ├─ map-view.gif
 │  │  └─ mobile-view.gif
 ├─ package.json
 └─ README.md
-````
+```
 
 ---
 
 ## ⚡ Installation
 
-1. Clone the repo:
-
 ```bash
 git clone https://github.com/srinugalla/the-slice-x.git
 cd the-slice-x/frontend
-```
-
-2. Install dependencies:
-
-```bash
 npm install
 ```
 
-3. Setup environment variables:
+### Environment Variables
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_access_token
 ```
 
-4. Run the dev server:
+Run locally:
 
 ```bash
 npm run dev
 ```
 
-Visit `http://localhost:3000`.
+Open 👉 `http://localhost:3000`
 
 ---
 
@@ -141,35 +184,41 @@ vercel
 
 ---
 
-## 🎨 Design Inspiration
+## 🎨 Design Principles
 
-Inspired by **premium real estate websites** like:
+* Trust-first UI for real estate
+* Minimal yet premium look
+* Location-driven discovery
+* Smooth animations without distraction
+
+Inspired by:
 
 * [FullScale.ie](https://fullscale.ie)
-* Modern mobile-first apps with smooth animations and minimal design.
+* Modern real-estate and map-based platforms
 
 ---
 
 ## 📞 Contact
 
-For support or inquiries:
-
-* Email: [support@theslicex.com](mailto:support@theslicex.com)
-* Website: [https://www.theslicex.com](https://www.theslicex.com)
+* **Email:** [support@theslicex.com](mailto:support@theslicex.com)
+* **Website:** [https://www.theslicex.com](https://www.theslicex.com)
 
 ---
 
-## 💡 Future Enhancements
+## 🧭 Roadmap
 
-* Hamburger menu on mobile
-* Favorites/Wishlist
-* User Authentication & Profiles
-* Interactive Map View
-* Dark Mode Toggle
+* Saved searches & alerts
+* User dashboards
+* Favorite properties
+* Advanced map filters (radius, price range)
+* Dark mode
+* Verified seller badges
 
 ---
 
 ## ⚖️ License
 
-MIT License © 2026 [The Slice X](https://www.theslicex.com)
+MIT License © 2026
+**The Slice X — Trusted land discovery, reimagined.**
 
+---
