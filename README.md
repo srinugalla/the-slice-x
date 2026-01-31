@@ -24,7 +24,7 @@ Built with a modern, mobile-first approach, it blends **list-based browsing** wi
 
 > A smooth, wheel-like pagination scroller designed for fast and delightful browsing.
 
-![Enhanced Pagination Hero](public/gifs/enhanced-pagination.gif)
+![Enhanced Pagination Hero](frontend/public/gifs/enhanced-pagination.gif)
 
 ---
 
@@ -47,9 +47,6 @@ Built with a modern, mobile-first approach, it blends **list-based browsing** wi
 * Unified filters across **Home View** and **Map View**
 * Clean, fast, and responsive UI
 
-**Preview:**
-![Search Animation](public/gifs/search-bar.gif)
-
 ---
 
 ### 2. Property Listings (Home View)
@@ -60,8 +57,6 @@ Built with a modern, mobile-first approach, it blends **list-based browsing** wi
 * One-click contact via **WhatsApp or phone**
 * Designed to build trust and clarity
 
-**Preview:**
-![Listings Animation](public/gifs/listings.gif)
 
 ---
 
@@ -74,7 +69,7 @@ Built with a modern, mobile-first approach, it blends **list-based browsing** wi
 * Ideal for location-first property exploration
 
 **Preview:**
-![Map View Animation](public/gifs/map-view.gif)
+![Map View Animation](frontend/public/gifs/map-view.gif)
 
 ---
 
@@ -96,8 +91,6 @@ Built with a modern, mobile-first approach, it blends **list-based browsing** wi
 * Clean typography with balanced contrast
 * Fast load times and smooth animations
 
-**Preview:**
-![Mobile View Animation](public/gifs/mobile-view.gif)
 
 ---
 
@@ -138,10 +131,8 @@ frontend/
 │  ├─ favicon.png
 │  ├─ gifs/
 │  │  ├─ enhanced-pagination.gif
-│  │  ├─ search-bar.gif
-│  │  ├─ listings.gif
-│  │  ├─ map-view.gif
-│  │  └─ mobile-view.gif
+│  │  └─ map-view.gif
+│  │  
 ├─ package.json
 └─ README.md
 ```
