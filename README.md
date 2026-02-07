@@ -132,8 +132,7 @@ frontend/
 │  ├─ favicon.png
 │  ├─ gifs/
 │  │  ├─ enhanced-pagination.gif
-│  │  └─ map-view.gif
-│  │  
+│  │  └─ map-view.gif  
 ├─ package.json
 └─ README.md
 ```
